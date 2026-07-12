@@ -52,6 +52,36 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
 .badge.crit{background:rgba(255,23,68,0.15);color:#ff1744}
 .badge.info{background:rgba(0,180,255,0.15);color:#00b4ff}
 @media(max-width:768px){#sidebar{width:100%}#header .status-bar{gap:8px;font-size:10px}#legend{font-size:9px;gap:8px;padding:6px 10px}}
+#ticker{position:fixed;bottom:54px;left:50%;transform:translateX(-50%);background:rgba(10,14,26,0.88);border:1px solid rgba(0,180,255,0.12);border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px);font-size:10px;z-index:85;width:auto;max-width:90%;height:28px;overflow:hidden}
+#ticker-label{color:#546e7a;font-weight:600;letter-spacing:0.5px;white-space:nowrap;font-size:8px}
+#ticker-items{display:flex;gap:0;overflow:hidden;white-space:nowrap;flex:1;min-width:0}
+.ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-right:1px solid rgba(255,255,255,0.06);animation:tickerSlide 0.4s ease-out;font-size:10px;white-space:nowrap}
+.ticker-item:last-child{border-right:none}
+.ticker-dot{width:5px;height:5px;border-radius:50%;display:inline-block}
+.ticker-dot.critical{background:#ff1744;box-shadow:0 0 6px #ff174466}
+.ticker-dot.warning{background:#ffd600;box-shadow:0 0 6px #ffd60066}
+.ticker-dot.info{background:#00b4ff;box-shadow:0 0 6px #00b4ff66}
+.ticker-dot.ok{background:#00e676;box-shadow:0 0 6px #00e67666}
+.ticker-time{color:#546e7a;font-size:8px}
+@keyframes tickerSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+#hypothesis-panel{position:fixed;right:14px;top:70px;width:260px;background:rgba(10,14,26,0.9);border:1px solid rgba(0,180,255,0.12);border-radius:10px;backdrop-filter:blur(8px);z-index:80;overflow:hidden;transition:transform 0.3s ease,opacity 0.3s ease}
+#hypothesis-panel .hp-header{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
+#hp-body{padding:4px 0;max-height:220px;overflow-y:auto}
+.hp-card{padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.2s}
+.hp-card:hover{background:rgba(0,180,255,0.06)}
+.hp-card:last-child{border-bottom:none}
+.hp-card .hp-title{font-size:11px;font-weight:600;color:#e0e6f0;margin-bottom:2px;line-height:1.3}
+.hp-card .hp-row{display:flex;justify-content:space-between;align-items:center;font-size:9px}
+.hp-card .hp-label{color:#546e7a}
+.hp-card .hp-confidence{font-weight:700;font-size:10px}
+.hp-conf-high{color:#00e676}
+.hp-conf-mid{color:#ffd600}
+.hp-conf-low{color:#ff9100}
+.hp-card .hp-status{font-size:8px;padding:1px 5px;border-radius:4px}
+.hp-status.confirmed{background:rgba(0,230,118,0.15);color:#00e676}
+.hp-status.pending{background:rgba(255,214,0,0.15);color:#ffd600}
+.hp-status.rejected{background:rgba(255,23,68,0.15);color:#ff1744}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(0,180,255,0.25);border-radius:2px}
@@ -89,6 +119,21 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
 </div>
 <div id="minimap"><canvas id="minimap-canvas"></canvas></div>
 <div id="tooltip"></div>
+
+<!-- Event Ticker -->
+<div id="ticker">
+  <div id="ticker-label">СОБЫТИЯ</div>
+  <div id="ticker-items"></div>
+</div>
+
+<!-- Hypothesis Panel -->
+<div id="hypothesis-panel">
+  <div class="hp-header">
+    <span style="font-size:12px;font-weight:600;color:#90caf9;letter-spacing:0.5px;">ГИПОТЕЗЫ</span>
+    <span id="hp-count" style="font-size:10px;color:#546e7a;"></span>
+  </div>
+  <div id="hp-body"></div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -438,6 +483,10 @@ function setupInteraction() {
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
+
+    // Auto-orbit
+    if (orbitActive) targetTheta += ORBIT_SPEED;
+
     theta += (targetTheta - theta) * 0.08;
     phi += (targetPhi - phi) * 0.08;
     radius += (targetRadius - radius) * 0.08;
@@ -445,6 +494,9 @@ function setupInteraction() {
     camera.position.y = radius * Math.cos(phi);
     camera.position.z = radius * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(0, 0, 0);
+
+    // Node breathing (emissive pulsing)
+    breatheNodes();
 
     flowParticles.forEach(fp => {
       fp.t += fp.speed;
@@ -465,12 +517,219 @@ window.addEventListener('resize', () => {
   renderer.setSize(width, height);
 });
 
+// === ENHANCEMENTS: Auto-orbit, pulsing, polling, ticker, hypotheses ===
+let orbitIdleTimer = null;
+let orbitActive = true;
+const ORBIT_IDLE_DELAY = 10000;
+const ORBIT_SPEED = 0.002;
+
+function resetOrbitTimer() {
+  orbitActive = false;
+  clearTimeout(orbitIdleTimer);
+  orbitIdleTimer = setTimeout(() => { orbitActive = true; }, ORBIT_IDLE_DELAY);
+}
+
+// Global mouse/keyboard listeners reset orbit timer
+window.addEventListener('mousedown', resetOrbitTimer, true);
+window.addEventListener('touchstart', resetOrbitTimer, true);
+window.addEventListener('wheel', resetOrbitTimer, true);
+resetOrbitTimer();
+
+let breathePhase = 0;
+let lastEventTs = null;
+
+// Node breathing — runs inside animate()
+function breatheNodes() {
+  breathePhase += 0.02;
+  Object.values(nodeObjects).forEach(obj => {
+    const s = obj.data.status;
+    if (s === 'healthy') {
+      const pulse = 0.12 + Math.sin(breathePhase) * 0.06;
+      obj.mesh.material.emissiveIntensity = pulse;
+    } else if (s === 'warning' || s === 'critical' || s === 'down') {
+      const pulse = 0.4 + Math.sin(breathePhase * 2.5) * 0.3;
+      obj.mesh.material.emissiveIntensity = pulse;
+    }
+  });
+}
+
+// Real-time polling
+async function pollStatus() {
+  try {
+    const resp = await fetch('/api/gigascope/graph');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    // Update node statuses
+    data.nodes.forEach(n => {
+      if (nodeMap[n.id]) {
+        const prevStatus = nodeMap[n.id].status;
+        if (prevStatus !== n.status) {
+          addTickerEvent(n.status, `${n.id}: ${prevStatus} → ${n.status}`);
+          const obj = nodeObjects[n.id];
+          if (obj) {
+            const col = n.status === 'healthy' ? 0x22c55e : n.status === 'warning' ? 0xffd600 : 0xff1744;
+            obj.mesh.material.color.setHex(col);
+            obj.mesh.material.emissive.setHex(col);
+          }
+        }
+        nodeMap[n.id] = n;
+      }
+    });
+    // Update counts
+    let nc = 0, wc = 0, cc = 0;
+    data.nodes.forEach(x => {
+      if (x.status === 'healthy') nc++; else if (x.status === 'warning') wc++; else cc++;
+    });
+    document.getElementById('normal-count').textContent = nc;
+    document.getElementById('warn-count').textContent = wc;
+    document.getElementById('crit-count').textContent = cc;
+    document.getElementById('total-count').textContent = data.nodes.length;
+    // Refresh sidebar if open
+    if (selectedNodeId && nodeMap[selectedNodeId]) showNodeDetails(selectedNodeId);
+    await pollHypotheses();
+    await pollEvents();
+  } catch(e) {}
+}
+
+async function pollHypotheses() {
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const hyps = data.hypotheses || [];
+    document.getElementById('hp-count').textContent = `(${hyps.length})`;
+    const body = document.getElementById('hp-body');
+    if (hyps.length === 0) {
+      body.innerHTML = '<div style="padding:12px;text-align:center;color:#546e7a;font-size:10px;">Гипотезы появятся после анализа инцидентов</div>';
+      return;
+    }
+    let html = '';
+    hyps.forEach(h => {
+      const conf = Math.round((h.confidence || 0) * 100);
+      const confClass = conf >= 60 ? 'hp-conf-high' : conf >= 30 ? 'hp-conf-mid' : 'hp-conf-low';
+      const statusClass = h.status === 'confirmed' ? 'confirmed' : h.status === 'rejected' ? 'rejected' : 'pending';
+      const statusLabel = h.status === 'confirmed' ? '✓' : h.status === 'rejected' ? '✗' : '○';
+      html += `<div class="hp-card" onclick="showHypothesisDetail('${h.id}')">
+        <div class="hp-title">${h.text || h.id}</div>
+        <div class="hp-row"><span class="hp-label">Уверенность</span><span class="hp-confidence ${confClass}">${conf}%</span></div>
+        <div class="hp-row"><span class="hp-label">Статус</span><span class="hp-status ${statusClass}">${statusLabel}</span></div>
+      </div>`;
+    });
+    body.innerHTML = html;
+  } catch(e) {}
+}
+
+async function pollEvents() {
+  try {
+    const resp = await fetch('/api/gigascope/events');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const events = data.events || [];
+    if (events.length > 0) {
+      const latest = events[0];
+      const ts = latest.timestamp || latest.id;
+      if (ts !== lastEventTs) {
+        lastEventTs = ts;
+        addTickerEvent(latest.severity || 'info', latest.description || (latest.service + ' ' + latest.type) || 'Event');
+      }
+    }
+  } catch(e) {}
+}
+
+let tickerItems = [];
+
+function addTickerEvent(severity, text) {
+  const container = document.getElementById('ticker-items');
+  const dotClass = severity === 'critical' || severity === 'down' ? 'critical' : severity === 'warning' ? 'warning' : severity === 'info' ? 'info' : 'ok';
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  const el = document.createElement('div');
+  el.className = 'ticker-item';
+  el.innerHTML = `<span class="ticker-dot ${dotClass}"></span><span>${text}</span><span class="ticker-time">${timeStr}</span>`;
+  container.appendChild(el);
+  tickerItems.push(el);
+  while (tickerItems.length > 8) {
+    const old = tickerItems.shift();
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+  }
+  container.scrollLeft = container.scrollWidth;
+}
+
+// === Hypothesis Detail Modal ===
+const modalOverlay = document.createElement('div');
+modalOverlay.id = 'modal-overlay';
+modalOverlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center';
+modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
+const modalBox = document.createElement('div');
+modalBox.id = 'modal-box';
+modalBox.style.cssText = 'background:rgba(12,18,34,0.97);border:1px solid rgba(0,180,255,0.2);border-radius:14px;width:480px;max-width:90vw;max-height:80vh;overflow-y:auto;padding:24px;backdrop-filter:blur(12px);position:relative';
+modalBox.innerHTML = '<div id="modal-close" style="position:absolute;top:12px;right:16px;color:#78909c;font-size:22px;cursor:pointer;line-height:1" onclick="closeModal()">✕</div><div id="modal-content"></div>';
+modalOverlay.appendChild(modalBox);
+document.body.appendChild(modalOverlay);
+
+function closeModal() { modalOverlay.style.display = 'none'; }
+
+async function showHypothesisDetail(id) {
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses/' + id);
+    if (!resp.ok) return;
+    const d = await resp.json();
+    const confPct = Math.round((d.confidence || 0) * 100);
+    const confClass = confPct >= 60 ? 'hp-conf-high' : confPct >= 30 ? 'hp-conf-mid' : 'hp-conf-low';
+    const statusLabels = { confirmed: '✅ Подтверждена', pending: '🔬 На проверке', rejected: '❌ Отклонена' };
+    const evHtml = (d.evidence || []).map(e =>
+      `<div style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px">
+        <div style="color:#b0bec5">${e.text || '—'}</div>
+        <div style="display:flex;gap:8px;margin-top:2px;font-size:9px;color:#546e7a">
+          <span>Вес: ${e.weight || 0}</span>
+          <span>Источник: ${e.source_type || '—'}</span>
+        </div>
+      </div>`
+    ).join('') || '<div style="color:#546e7a;font-size:10px;padding:6px">Нет подтверждений</div>';
+    const incidentsHtml = (d.related_incidents || []).map(i =>
+      `<div style="display:flex;gap:8px;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.03)">
+        <span style="color:${i.severity === 'critical' ? '#ff1744' : i.severity === 'warning' ? '#ffd600' : '#00e676'}">●</span>
+        <span>${i.incident_id || '—'}</span>
+        <span style="color:#78909c">${i.service || '?'}</span>
+        <span style="color:#546e7a">${i.status || '?'}</span>
+      </div>`
+    ).join('') || '<div style="color:#546e7a;font-size:10px;padding:4px">Нет связанных инцидентов</div>';
+    document.getElementById('modal-content').innerHTML = `
+      <div style="margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:#e0e6f0;margin-bottom:8px">${d.text || 'Без названия'}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px">
+          <span>Уверенность: <span class="${confClass}" style="font-weight:700;font-size:13px">${confPct}%</span></span>
+          <span>Статус: ${statusLabels[d.status] || '🔬 На проверке'}</span>
+          <span style="color:#546e7a">Создана: ${d.created_by || '?'}</span>
+        </div>
+        <div style="font-size:10px;color:#546e7a;margin-top:4px">ID: ${d.id}</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Подтверждения</div>
+        ${evHtml}
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Связанные инциденты</div>
+        ${incidentsHtml}
+      </div>
+    `;
+    modalOverlay.style.display = 'flex';
+  } catch(e) {}
+}
+
+// Start polling
+setInterval(pollStatus, 15000);
+
 // INIT
 (async function() {
   document.getElementById('total-count').textContent = '...';
   const ok = await fetchGraph();
   if (ok && graphData.nodes.length > 0) {
     buildGraph();
+    // Initial ticker event
+    addTickerEvent('ok', 'GigaScope запущен — 8 сервисов под наблюдением');
+    // Fetch events and hypotheses
+    setTimeout(() => { pollStatus(); }, 2000);
   } else {
     container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:16px;color:#78909c;"><div style="font-size:48px;">📡</div><div style="font-size:16px;">Не удалось загрузить данные графа</div><div style="font-size:12px;">Проверьте, работает ли Ouroboros на порту 8765</div><button onclick="location.reload()" style="margin-top:8px;padding:8px 20px;border-radius:8px;border:1px solid rgba(0,180,255,0.3);background:rgba(0,180,255,0.1);color:#81d4fa;cursor:pointer;font-size:13px;font-family:inherit;">Повторить</button></div>`;
   }

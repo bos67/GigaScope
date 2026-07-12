@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 import httpx
 
 
-OUROBOROS_API = os.environ.get("OUROBOROS_API_URL", "http://localhost:8080")
+OUROBOROS_API = os.environ.get("OUROBOROS_API_URL", "http://localhost:8765")
 EVENT_URL = f"{OUROBOROS_API}/api/gigascope/events"
 HYPOTHESES_URL = f"{OUROBOROS_API}/api/gigascope/hypotheses"
 GRAPH_URL = f"{OUROBOROS_API}/api/gigascope/graph"
