@@ -1,8 +1,79 @@
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
 venv/
+env/
+
+# Secrets and local configuration
+.env
+.env.*
+!config.example.env
+*.pem
+*.key
+*.p12
+*.pfx
+
+# JavaScript/build artifacts
 node_modules/
 dist/
+build/
+
+# Runtime state and logs
+logs/
 *.log
+*.pid
+*.sock
+tmp/
+temp/
+.cache/
+
+# Local databases and exports
+neo4j-data/
+data/
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+
+# Generated/private working materials
+dialogue-snapshots/
+*.pdf
+*.mp4
+*.mkv
+*.mov
+*.wav
+*.webm
+
+# Generated/private documentation helpers and legacy local servers
+# (the supported entrypoint is backend/api/gigascope_server.py)
+generate_*.py
+frontend/gigascope-spa/generate_*.py
+/serve.py
+/frontend/gigascope-spa/serve.py
+/backend/api/restart.sh
+# All markdown except README.md — private working docs stay local
+*.md
+!README.md
+docs/subagents-guide.html
+
+# OS / editors
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Generated PDF page renders and presentation scripts
+page_*.png
+scripts/
+frontend/gigascope-spa/page_*.png
+frontend/gigascope-spa/scripts/

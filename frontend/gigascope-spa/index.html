@@ -7,7 +7,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidden;height:100vh;color:#e0e6f0}
-#header{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;background:linear-gradient(135deg,rgba(10,14,26,0.97),rgba(20,30,60,0.97));border-bottom:1px solid rgba(0,180,255,0.2);display:flex;align-items:center;padding:0 20px;gap:12px;backdrop-filter:blur(12px)}
+#bg-gradient{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;background:radial-gradient(ellipse at 50% 30%,rgba(0,100,200,0.06),rgba(10,14,26,0.98) 60%,#0a0e1a);pointer-events:none}
+#header{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;background:linear-gradient(135deg,rgba(10,14,26,0.97),rgba(15,25,50,0.97));border-bottom:1px solid rgba(0,180,255,0.2);display:flex;align-items:center;padding:0 20px;gap:12px;backdrop-filter:blur(12px)}
 #header .logo{font-size:18px;font-weight:700;letter-spacing:1px;white-space:nowrap}
 #header .logo span{color:#00b4ff}
 .header-badge{font-size:9px;padding:1px 8px;border-radius:6px;letter-spacing:1px;font-weight:600;background:linear-gradient(135deg,rgba(0,180,255,0.2),rgba(156,39,176,0.2));border:1px solid rgba(0,180,255,0.3);color:#81d4fa}
@@ -65,10 +66,81 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
 .ticker-time{color:#546e7a;font-size:8px}
 @keyframes tickerSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 
-#hypothesis-panel{position:fixed;right:14px;top:70px;width:260px;background:rgba(10,14,26,0.9);border:1px solid rgba(0,180,255,0.12);border-radius:10px;backdrop-filter:blur(8px);z-index:80;overflow:hidden;transition:transform 0.3s ease,opacity 0.3s ease}
+#hypothesis-panel{position:fixed;right:14px;top:70px;width:270px;min-width:200px;min-height:120px;max-width:90vw;max-height:85vh;background:rgba(14,22,40,0.78);border:1px solid rgba(0,180,255,0.14);border-radius:12px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);z-index:80;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.3);resize:both;display:flex;flex-direction:column}
+#hp-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none}
+#hp-header:active{cursor:grabbing}
+#hp-body{padding:4px 0;overflow-y:auto;flex:1;min-height:0}
+.hp-btn{background:rgba(0,180,255,0.12);border:1px solid rgba(0,180,255,0.2);color:#81d4fa;border-radius:6px;padding:3px 8px;font-size:9px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;box-sizing:border-box;line-height:16px;min-height:24px}
+.hp-btn:hover{background:rgba(0,180,255,0.25);border-color:rgba(0,180,255,0.4)}
+
+/* Draggable window — macOS-style glass */
+.hyp-window{position:fixed;z-index:150;background:rgba(14,22,40,0.82);border:1px solid rgba(0,180,255,0.18);border-radius:14px;backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);box-shadow:0 12px 48px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04) inset;width:440px;max-width:90vw;max-height:72vh;display:none;overflow:hidden;animation:hypAppear 0.25s cubic-bezier(0.22,1,0.36,1)}
+@keyframes hypAppear{from{opacity:0;transform:scale(0.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.hyp-window .hw-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none;font-size:12px;font-weight:600;color:#90caf9;letter-spacing:0.5px}
+.hyp-window .hw-header:active{cursor:grabbing}
+.hyp-window .hw-close{background:none;border:none;color:#78909c;font-size:18px;cursor:pointer;line-height:1;padding:0 2px;transition:color 0.15s}
+.hyp-window .hw-close:hover{color:#fff}
+.hyp-window .hw-body{padding:14px;overflow-y:auto;flex:1;min-height:0}
+.hyp-window .hw-body::-webkit-scrollbar{width:3px}
+.hyp-window .hw-body::-webkit-scrollbar-thumb{background:rgba(0,180,255,0.2);border-radius:2px}
+
+/* Create hypothesis form */
+#hyp-create-window .hw-body{display:flex;flex-direction:column;gap:10px}
+#hyp-create-window textarea{width:100%;min-height:70px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e0e6f0;font-size:12px;padding:8px 10px;font-family:inherit;resize:vertical;outline:none}
+#hyp-create-window textarea:focus{border-color:rgba(0,180,255,0.4)}
+#hyp-create-window label{font-size:11px;color:#90a4ae;display:flex;align-items:center;gap:8px}
+#hyp-create-window input[type=range]{flex:1;max-width:160px;accent-color:#00b4ff;height:4px}
+#hyp-create-window .conf-val{font-weight:700;font-size:13px;min-width:32px;text-align:center}
+#hyp-create-window select{width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e0e6f0;font-size:11px;padding:6px 8px;outline:none;font-family:inherit}
+#hyp-create-window .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+#hyp-create-window .form-actions button{border:1px solid transparent;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.2s}
+#hyp-create-window .btn-create{background:linear-gradient(135deg,#00b4ff,#1565c0);color:#fff}
+#hyp-create-window .btn-create:hover{opacity:0.85}
+#hyp-create-window .btn-cancel{background:rgba(255,255,255,0.06);color:#78909c}
+#hyp-create-window .btn-cancel:hover{background:rgba(255,255,255,0.1)}
 #hypothesis-panel .hp-header{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
-#hp-body{padding:4px 0;max-height:220px;overflow-y:auto}
+#hp-body{padding:4px 0;overflow-y:auto;flex:1;min-height:0}
 .hp-card{padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.2s}
+
+/* Action buttons in detail window */
+.detail-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.detail-btn{background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.2);color:#81d4fa;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.detail-btn:hover{background:rgba(0,180,255,0.22);border-color:#00b4ff}
+.detail-btn-danger{background:rgba(255,23,68,0.1);border:1px solid rgba(255,23,68,0.25);color:#ff8a80}
+.detail-btn-danger:hover{background:rgba(255,23,68,0.25);border-color:#ff1744}
+.detail-btn-success{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2);color:#69f0ae}
+.detail-btn-success:hover{background:rgba(0,230,118,0.22);border-color:#00e676}
+
+/* Unified control sizing for all hypothesis-window buttons (v1) */
+.hp-btn,
+.detail-btn,
+.detail-btn-danger,
+.detail-btn-success,
+#hyp-create-window .form-actions button,
+#hyp-create-window .btn-create,
+#hyp-create-window .btn-cancel{
+  box-sizing:border-box !important;
+  padding:6px 14px !important;
+  font-size:11px !important;
+  line-height:1.3 !important;
+  height:28px !important;
+  border:1px solid transparent !important;
+  border-radius:8px !important;
+  font-weight:500;
+  letter-spacing:0;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.edit-field{width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e0e6f0;font-size:12px;padding:8px 10px;font-family:inherit;resize:vertical;outline:none;margin-bottom:6px}
+.edit-field:focus{border-color:rgba(0,180,255,0.4)}
+.edit-conf-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.edit-conf-row input[type=range]{flex:1;max-width:140px;accent-color:#00b4ff;height:4px}
+.edit-conf-val{font-weight:700;font-size:13px;min-width:32px;text-align:center;color:#00b4ff}
+.inc-unlink-btn{background:none;border:none;color:#ff8a80;font-size:10px;cursor:pointer;padding:1px 6px;border-radius:4px;font-family:inherit;margin-left:auto}
+.inc-unlink-btn:hover{background:rgba(255,23,68,0.15)}
+.inc-link-select{width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e0e6f0;font-size:11px;padding:6px 8px;outline:none;font-family:inherit;margin-bottom:6px}
+.inc-link-select:focus{border-color:rgba(0,180,255,0.4)}
 .hp-card:hover{background:rgba(0,180,255,0.06)}
 .hp-card:last-child{border-bottom:none}
 .hp-card .hp-title{font-size:11px;font-weight:600;color:#e0e6f0;margin-bottom:2px;line-height:1.3}
@@ -82,9 +154,171 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
 .hp-status.confirmed{background:rgba(0,230,118,0.15);color:#00e676}
 .hp-status.pending{background:rgba(255,214,0,0.15);color:#ffd600}
 .hp-status.rejected{background:rgba(255,23,68,0.15);color:#ff1744}
+
+/* Incident panel — same pattern as hypothesis-panel */
+#incident-panel{position:fixed;right:14px;top:380px;width:300px;min-width:220px;min-height:120px;max-height:70vh;background:rgba(13,18,28,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,180,255,0.18);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.5);z-index:80;overflow:hidden;display:flex;flex-direction:column;resize:both}
+#ip-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none}
+#ip-header:active{cursor:grabbing}
+#ip-body{padding:0;overflow-y:auto;flex:1}
+
+/* Model logs panel — draggable window with resizable size */
+/* Prediction panel — Risk scores */
+#prediction-panel{position:fixed;left:14px;top:230px;width:220px;min-width:180px;min-height:100px;max-height:60vh;background:rgba(14,22,40,0.82);border:1px solid rgba(0,180,255,0.14);border-radius:12px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);z-index:78;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.3);display:none;flex-direction:column;resize:both}
+#signals-panel{position:fixed;left:14px;top:230px;width:280px;min-width:220px;min-height:120px;max-height:65vh;background:rgba(14,22,40,0.82);border:1px solid rgba(156,39,176,0.14);border-radius:12px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);z-index:78;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.3);display:none;flex-direction:column;resize:both}
+#sp-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px;background:rgba(156,39,176,0.08);border-bottom:1px solid rgba(156,39,176,0.12);font-size:11px;font-weight:600;color:#ce93d8;flex-shrink:0}
+#sp-body{flex:1;overflow-y:auto;padding:6px 8px;font-size:10px}
+.sp-header-actions{display:flex;align-items:center;gap:4px}
+.sp-badge{font-size:9px;padding:1px 8px;border-radius:10px;background:rgba(255,255,255,0.05);color:#b0bec5;letter-spacing:0.3px}
+.sp-form-row{margin-bottom:6px;display:flex;flex-direction:column;gap:2px}
+.sp-form-row label{font-size:9px;color:#78909c;text-transform:uppercase;letter-spacing:0.3px}
+.sp-form-row input,.sp-form-row textarea,.sp-form-row select{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:5px 7px;color:#e0e6f0;font-size:10px;font-family:inherit;outline:none;transition:border-color 0.2s}
+.sp-form-row input:focus,.sp-form-row textarea:focus,.sp-form-row select:focus{border-color:rgba(156,39,176,0.4)}
+.sp-submit-btn{background:rgba(156,39,176,0.2);border:1px solid rgba(156,39,176,0.3);color:#ce93d8;border-radius:6px;padding:5px 14px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;margin-top:4px}
+.sp-submit-btn:hover{background:rgba(156,39,176,0.3)}
+.signal-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:6px 8px;margin-bottom:4px}
+.signal-card .sc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.signal-card .sc-service{font-weight:600;color:#e0e6f0;font-size:10px}
+.signal-card .sc-severity{font-size:8px;padding:0 6px;border-radius:4px}
+.signal-card .sc-severity.critical{background:rgba(255,23,68,0.2);color:#ff8a80}
+.signal-card .sc-severity.warning{background:rgba(255,152,0,0.2);color:#ffb74d}
+.signal-card .sc-severity.info{background:rgba(0,230,118,0.15);color:#69f0ae}
+.signal-card .sc-desc{color:#90a4ae;font-size:9px;margin:2px 0}
+.signal-card .sc-status{font-size:8px;color:#546e7a}
+.signal-card .sc-actions{display:flex;gap:4px;margin-top:3px}
+.signal-card .sc-actions button{font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#b0bec5;cursor:pointer;font-family:inherit}
+.signal-card .sc-actions button:hover{background:rgba(156,39,176,0.15);border-color:rgba(156,39,176,0.3)}
+#pp-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none}
+#pp-header span{font-size:11px;font-weight:600;color:#90caf9;letter-spacing:0.5px}
+#pp-body{padding:8px 12px;overflow-y:auto;flex:1;min-height:0}
+.pp-service{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.pp-service:last-child{border-bottom:none}
+.pp-row{display:flex;justify-content:space-between;align-items:center;font-size:10px}
+.pp-name{font-weight:600;color:#e0e6f0}
+.pp-score{font-weight:700;font-size:12px;padding:1px 8px;border-radius:6px}
+.pp-score.green{color:#00e676;background:rgba(0,230,118,0.12)}
+.pp-score.yellow{color:#ffd600;background:rgba(255,214,0,0.12)}
+.pp-score.red{color:#ff1744;background:rgba(255,23,68,0.12)}
+.pp-bar{height:3px;border-radius:2px;margin-top:4px;background:rgba(255,255,255,0.06);overflow:hidden}
+.pp-bar-fill{height:100%;border-radius:2px;transition:width 0.5s ease}
+.pp-bar-fill.green{background:linear-gradient(90deg,#00e676,#00c853)}
+.pp-bar-fill.yellow{background:linear-gradient(90deg,#ffd600,#ffab00)}
+.pp-bar-fill.red{background:linear-gradient(90deg,#ff1744,#d50000)}
+.pp-fail-prob{font-size:8px;color:#546e7a;margin-top:2px}
+.pp-header-actions{display:flex;align-items:center;gap:4px}
+.pp-refresh-btn{background:rgba(0,180,255,0.12);border:1px solid rgba(0,180,255,0.2);color:#81d4fa;border-radius:6px;padding:2px 8px;font-size:9px;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.pp-refresh-btn:hover{background:rgba(0,180,255,0.25)}
+.pp-feedback-row{display:flex;align-items:center;gap:4px;margin-top:4px}
+.pp-btn-fb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:0 5px;font-size:11px;cursor:pointer;transition:all 0.2s;line-height:1.6;font-family:inherit}
+.pp-btn-fb:hover{background:rgba(76,175,80,0.15);border-color:#4caf50}
+.pp-btn-fb-reject:hover{background:rgba(239,83,80,0.15);border-color:#ef5350}
+.pp-fb-status{font-size:9px;margin-left:4px;transition:opacity 0.3s}
+.pp-pattern{display:block;font-size:8px;color:#78909c;margin-top:2px;font-style:italic}
+
+/* Recommendation panel */
+#rec-panel{position:fixed;left:14px;top:430px;width:340px;min-width:280px;min-height:100px;max-height:55vh;background:rgba(14,22,40,0.82);border:1px solid rgba(0,180,255,0.14);border-radius:12px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);z-index:78;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.3);display:none;flex-direction:column;resize:both}
+#rp-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none}
+#rp-header span{font-size:11px;font-weight:600;color:#90caf9;letter-spacing:0.5px}
+#rp-body{padding:8px 12px;overflow-y:auto;flex:1;min-height:0}
+.rec-card{padding:6px 8px;margin-bottom:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
+.rec-card:last-child{margin-bottom:0}
+.rec-priority{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;margin-bottom:4px}
+.rec-priority.high{background:rgba(255,23,68,0.15);color:#ff1744}
+.rec-priority.medium{background:rgba(255,214,0,0.15);color:#ffd600}
+.rec-priority.low{background:rgba(0,180,255,0.15);color:#00b4ff}
+.rec-type{font-size:10px;color:#546e7a;text-transform:uppercase;letter-spacing:0.3px;margin-left:4px}
+.rec-title{font-size:12px;color:#e0e6f0;margin-top:2px;line-height:1.4}
+.rec-reasoning{font-size:11px;color:#78909c;margin-top:2px;line-height:1.3;display:none;padding:8px 10px;background:rgba(0,0,0,0.2);border-radius:6px;margin-top:4px;color:#b0bec5;line-height:1.5}
+.rec-card.expanded .rec-reasoning{display:block}
+.rec-card{cursor:pointer;transition:border-color 0.2s}
+.rec-card:hover{border-color:rgba(0,180,255,0.2)}
+#model-logs-panel{position:fixed;right:14px;top:70px;width:540px;height:400px;min-width:320px;min-height:180px;max-width:90vw;max-height:85vh;background:rgba(12,16,28,0.94);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border:1px solid rgba(0,180,255,0.18);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:110;display:none;flex-direction:column;overflow:hidden;resize:both}
+#ml-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:grab;user-select:none;background:linear-gradient(180deg,rgba(0,180,255,0.06),transparent)}
+#ml-header:active{cursor:grabbing}
+#ml-title{font-size:11px;font-weight:600;color:#90caf9;letter-spacing:0.3px;display:flex;align-items:center;gap:6px;flex:1}
+.ml-close-btn{background:none;border:none;color:#546e7a;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;margin-left:auto;transition:color 0.2s}
+.ml-close-btn:hover{color:#ff8a80}
+.ml-dismiss-btn{background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.2);color:#40c4ff;font-size:9px;padding:2px 8px;border-radius:6px;cursor:pointer;margin-left:8px;transition:all 0.2s}
+.ml-dismiss-btn:hover{background:rgba(0,180,255,0.2);border-color:rgba(0,180,255,0.4);color:#69e0ff}
+#ml-toggle-btn{transition:all 0.3s ease}
+#ml-toggle-btn.status-green{background:rgba(0,230,118,0.15);border-color:rgba(0,230,118,0.3);color:#69f0ae}
+#ml-toggle-btn.status-yellow{background:rgba(255,214,0,0.15);border-color:rgba(255,214,0,0.3);color:#ffd600}
+#ml-toggle-btn.status-red{background:rgba(255,23,68,0.15);border-color:rgba(255,23,68,0.3);color:#ff8a80}
+.ml-btns{display:flex;gap:4px}
+.ml-btn{background:rgba(0,180,255,0.12);border:1px solid rgba(0,180,255,0.2);color:#81d4fa;border-radius:6px;padding:2px 6px;font-size:8px;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.ml-btn:hover{background:rgba(0,180,255,0.25);border-color:rgba(0,180,255,0.4)}
+.ml-btn.active{background:rgba(0,230,118,0.18);border-color:rgba(0,230,118,0.35);color:#00e676}
+#ml-resizer{width:8px;height:8px;background:linear-gradient(135deg,rgba(0,180,255,0.4),rgba(0,230,118,0.4));cursor:nwse-resize;border-radius:0 0 4px 0;position:absolute;bottom:2px;right:2px;z-index:100}
+#ml-body{padding:8px 10px 6px;overflow-y:auto;flex:1;background:rgba(0,0,0,0.15)}
+.ml-filter-row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.ml-filter-select{flex:1;min-width:70px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#e0e6f0;font-size:10px;padding:4px 6px;outline:none}
+.ml-time-range{flex:2;min-width:140px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#e0e6f0;font-size:9px;padding:4px 6px;outline:none}
+.ml-empty{color:#546e7a;font-size:9px;text-align:center;padding:12px 0}
+.ml-log-card{padding:6px 8px;margin-bottom:6px;background:rgba(255,255,255,0.02);border-radius:6px;border-left:2px solid;position:relative}
+.ml-log-card:last-child{margin-bottom:0}
+.ml-log-card.critical{border-left-color:#ff1744}
+.ml-log-card.warning{border-left-color:#ffd600}
+.ml-log-card.ok{border-left-color:#00e676}
+.ml-log-card.error{border-left-color:#ff8a80}
+.ml-log-card.timeout{border-left-color:#9575cd}
+.ml-log-head{display:flex;justify-content:space-between;gap:6px;margin-bottom:3px;font-size:8px}
+.ml-slot{font-weight:700;color:#81d4fa}
+.ml-time{color:#546e7a}
+.ml-log-body{font-size:10px;color:#b0bec5;line-height:1.3}
+.ml-log-body .usage{color:#78909c;margin-top:2px}
+.ml-log-body .latency{color:#4fc3f7}
+.ml-log-body .status{float:right}
+.ml-resize-handle{width:100%;height:6px;cursor:n-resize;background:linear-gradient(90deg,rgba(0,180,255,0.1),rgba(0,230,118,0.1));position:absolute;bottom:0;left:0}
+
+/* Universal resize handle for all draggable windows */
+.window-resize-handle{width:14px;height:14px;cursor:nwse-resize;position:absolute;bottom:0;right:0;z-index:200;background:linear-gradient(135deg,transparent 40%,rgba(0,180,255,0.35) 40%,rgba(0,180,255,0.35) 55%,transparent 55%,transparent 70%,rgba(0,180,255,0.35) 70%,rgba(0,180,255,0.35) 85%,transparent 85%);border-radius:0 0 12px 0;opacity:0.5;transition:opacity 0.2s}
+.window-resize-handle:hover{opacity:1;background:linear-gradient(135deg,transparent 40%,rgba(0,230,118,0.5) 40%,rgba(0,230,118,0.5) 55%,transparent 55%,transparent 70%,rgba(0,230,118,0.5) 70%,rgba(0,230,118,0.5) 85%,transparent 85%)}
+.hyp-window{resize:both;overflow:auto;min-width:280px;min-height:160px;max-width:90vw;max-height:85vh}
+.ip-card{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.2s}
+.ip-card:hover{background:rgba(0,180,255,0.06)}
+.ip-card:last-child{border-bottom:none}
+.ip-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ip-card-title{font-size:11px;font-weight:600;color:#e0e6f0;line-height:1.3}
+.ip-sev{font-size:8px;padding:1px 6px;border-radius:4px;letter-spacing:0.4px;font-weight:700;flex-shrink:0;margin-left:6px}
+.ip-sev-critical{background:rgba(255,23,68,0.18);color:#ff1744}
+.ip-sev-warning{background:rgba(255,214,0,0.18);color:#ffd600}
+.ip-sev-info{background:rgba(0,180,255,0.18);color:#81d4fa}
+.ip-status-badge{font-size:8px;padding:1px 5px;border-radius:4px;margin-left:4px}
+.ip-status-open{background:rgba(255,145,0,0.18);color:#ff9100}
+.ip-status-resolved{background:rgba(0,230,118,0.15);color:#00e676}
+.ip-meta{font-size:9px;color:#546e7a;display:flex;justify-content:space-between;margin-top:3px}
+.ip-desc{display:none;margin-top:6px;font-size:10px;color:#b0bec5;line-height:1.4;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px}
+.ip-desc.open{display:block}
+
+/* Incident cards in node-details sidebar */
+.nd-inc-card{padding:6px 8px;margin-top:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(0,180,255,0.12);border-radius:6px;cursor:pointer;transition:background 0.2s}
+.nd-inc-card:hover{background:rgba(0,180,255,0.06)}
+.nd-inc-head{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.nd-inc-title{flex:1;font-size:11px;font-weight:600;color:#e0e6f0;line-height:1.3}
+.nd-inc-meta{font-size:9px;color:#546e7a;display:flex;justify-content:space-between}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(0,180,255,0.25);border-radius:2px}
+
+/* Dashboard — Engine Status card */
+#dashboard-card{position:fixed;left:14px;top:70px;width:240px;z-index:75;background:rgba(14,22,40,0.82);border:1px solid rgba(0,180,255,0.14);border-radius:12px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);box-shadow:0 4px 24px rgba(0,0,0,0.3);padding:10px 12px;font-size:10px;color:#e0e6f0;display:none;cursor:default}
+#dashboard-card .dc-title{font-size:9px;font-weight:700;color:#90caf9;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;cursor:grab;user-select:none}
+#dashboard-card .dc-title .dc-badge{font-size:7px;background:rgba(0,180,255,0.15);color:#40c4ff;padding:1px 5px;border-radius:4px;letter-spacing:0.3px}
+#dashboard-card .dc-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+#dashboard-card .dc-row:last-child{border-bottom:none}
+#dashboard-card .dc-label{color:#78909c}
+#dashboard-card .dc-value{font-weight:600}
+#dashboard-card .dc-value.high{color:#00e676}
+#dashboard-card .dc-value.mid{color:#ffd600}
+#dashboard-card .dc-value.low{color:#ff9100}
+#dashboard-card .dc-action{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:6px}
+#dashboard-card .dc-btn{flex:1;border:1px solid rgba(0,180,255,0.25);background:rgba(0,180,255,0.12);color:#81d4fa;border-radius:8px;padding:5px 8px;font-size:9px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:center;font-weight:600}
+#dashboard-card .dc-btn:hover{background:rgba(0,180,255,0.25);border-color:rgba(0,180,255,0.4)}
+#dashboard-card .dc-btn.demo{background:linear-gradient(135deg,rgba(0,180,255,0.2),rgba(156,39,176,0.2));border-color:rgba(0,180,255,0.3);color:#69e0ff}
+#dashboard-card .dc-btn.demo:hover{background:linear-gradient(135deg,rgba(0,180,255,0.35),rgba(156,39,176,0.35))}
+#dashboard-card .dc-mini-row{display:flex;gap:8px;margin-top:4px}
+#dashboard-card .dc-mini-box{flex:1;text-align:center;padding:4px 0;background:rgba(255,255,255,0.03);border-radius:6px}
+#dashboard-card .dc-mini-val{font-size:14px;font-weight:700}
+#dashboard-card .dc-mini-label{font-size:7px;color:#546e7a;text-transform:uppercase;letter-spacing:0.3px;margin-top:1px}
 </style>
 </head>
 <body>
@@ -96,8 +330,14 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
     <span><span class="status-dot dot-yellow"></span> Внимание: <strong id="warn-count">0</strong></span>
     <span><span class="status-dot dot-red"></span> Критично: <strong id="crit-count">0</strong></span>
     <span style="color:#546e7a;">Сервисов: <strong id="total-count">0</strong></span>
+    <button id="ml-toggle-btn" onclick="toggleModelLogs()" title="Логи моделей" style="background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.3);color:#69f0ae;border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;margin-left:4px;">📋 Логи моделей</button>
+    <button id="risk-btn" onclick="togglePredictions()" title="Риски и рекомендации" style="background:rgba(255,152,0,0.12);border:1px solid rgba(255,152,0,0.25);color:#ffb74d;border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;margin-left:4px;">📊 Риски</button>
+    <button id="signal-btn" onclick="toggleSignals()" title="Сигналы и запросы пользователей" style="background:rgba(156,39,176,0.12);border:1px solid rgba(156,39,176,0.25);color:#ce93d8;border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;margin-left:4px;">📩 Сигналы</button>
+    <button id="infra-btn" onclick="toggleInfra()" title="Показать/скрыть уровень инфраструктуры" style="background:rgba(0,184,212,0.12);border:1px solid rgba(0,184,212,0.25);color:#4dd0e1;border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;margin-left:4px;">🖥 Инфраструктура</button>
+    <button id="restart-btn" onclick="restartGigaScope()" title="Перезапустить GigaScope SPA" style="background:rgba(255,23,68,0.15);border:1px solid rgba(255,23,68,0.3);color:#ff8a80;border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;margin-left:4px;">⟳ Перезапуск</button>
   </div>
 </div>
+<div id="bg-gradient"></div>
 <div id="graph-container"></div>
 <div id="sidebar">
   <div class="panel-header">
@@ -118,7 +358,89 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
   <div class="legend-item"><span class="legend-dot" style="background:#ffd740;box-shadow:0 0 6px #ffd74066"></span> Async (Kafka)</div>
 </div>
 <div id="minimap"><canvas id="minimap-canvas"></canvas></div>
+
+<!-- Dashboard Engine Status -->
+<div id="dashboard-card">
+  <div class="dc-title" id="db-header">
+    🤖 Engine
+    <span class="dc-badge" id="dc-status-badge">ACTIVE</span>
+  </div>
+  <div class="dc-row">
+    <span class="dc-label">Инцидентов</span>
+    <span class="dc-value" id="dc-incidents">—</span>
+  </div>
+  <div class="dc-row">
+    <span class="dc-label">Гипотез</span>
+    <span class="dc-value" id="dc-hypotheses">—</span>
+  </div>
+  <div class="dc-row">
+    <span class="dc-label">Паттернов</span>
+    <span class="dc-value" id="dc-patterns">—</span>
+  </div>
+  <div class="dc-row">
+    <span class="dc-label">Каскадов</span>
+    <span class="dc-value" id="dc-cascades">—</span>
+  </div>
+  <div class="dc-row">
+    <span class="dc-label">Уверенность</span>
+    <span class="dc-value" id="dc-confidence">—</span>
+  </div>
+  <div class="dc-mini-row">
+    <div class="dc-mini-box">
+      <div class="dc-mini-val" id="dc-auto-hyps" style="color:#00b4ff">0</div>
+      <div class="dc-mini-label">Авто</div>
+    </div>
+    <div class="dc-mini-box">
+      <div class="dc-mini-val" id="dc-open-incidents" style="color:#ff9100">0</div>
+      <div class="dc-mini-label">Открыто</div>
+    </div>
+    <div class="dc-mini-box">
+      <div class="dc-mini-val" id="dc-cascade-count" style="color:#ce93d8">0</div>
+      <div class="dc-mini-label">Цепочек</div>
+    </div>
+  </div>
+  <div class="dc-action">
+    <button class="dc-btn demo" id="dc-demo-btn" onclick="runDemo()">🚀 Демо</button>
+    <button class="dc-btn" onclick="refreshEngine()">⟳ Обновить</button>
+  </div>
+</div>
+
+<!-- Prediction Panel -->
+<div id="prediction-panel">
+  <div id="pp-header">
+    <span>📊 Risk Scores</span>
+    <div class="pp-header-actions">
+      <button class="pp-refresh-btn" onclick="refreshPredictions()">⟳ Refresh</button>
+      <button class="hp-btn" onclick="document.getElementById('prediction-panel').style.display='none'" style="font-size:14px;padding:0 4px;min-height:auto">&times;</button>
+    </div>
+  </div>
+  <div id="pp-body"></div>
+</div>
+
+<!-- Recommendation Panel -->
+<div id="rec-panel">
+  <div id="rp-header">
+    <span>💡 Recommendations</span>
+    <button class="hp-btn" onclick="document.getElementById('rec-panel').style.display='none'" style="font-size:14px;padding:0 4px;min-height:auto">&times;</button>
+  </div>
+  <div id="rp-body"></div>
+</div>
+
 <div id="tooltip"></div>
+
+<!-- User Signals Panel -->
+<div id="signals-panel">
+  <div id="sp-header">
+    <span>📩 Сигналы пользователей</span>
+    <div class="sp-header-actions">
+      <span class="sp-badge" id="sp-badge-signals" onclick="switchSignalTab('signals')" style="cursor:pointer;background:rgba(156,39,176,0.2)">Сигналы</span>
+      <span class="sp-badge" id="sp-badge-queries" onclick="switchSignalTab('queries')" style="cursor:pointer">Вопросы</span>
+      <button class="pp-refresh-btn" onclick="refreshSignals()">⟳</button>
+      <button class="hp-btn" onclick="document.getElementById('signals-panel').style.display='none'" style="font-size:14px;padding:0 4px;min-height:auto">&times;</button>
+    </div>
+  </div>
+  <div id="sp-body"></div>
+</div>
 
 <!-- Event Ticker -->
 <div id="ticker">
@@ -128,23 +450,92 @@ body{font-family:'Segoe UI','Roboto',sans-serif;background:#0a0e1a;overflow:hidd
 
 <!-- Hypothesis Panel -->
 <div id="hypothesis-panel">
-  <div class="hp-header">
+  <div id="hp-header">
     <span style="font-size:12px;font-weight:600;color:#90caf9;letter-spacing:0.5px;">ГИПОТЕЗЫ</span>
-    <span id="hp-count" style="font-size:10px;color:#546e7a;"></span>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span id="hp-count" style="font-size:10px;color:#546e7a;"></span>
+      <button class="hp-btn" onclick="showCreateDialog()">+ Новая</button>
+    </div>
   </div>
-  <div id="hp-body"></div>
+  <div id="hp-body" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px;min-height:0"></div>
+  <div class="window-resize-handle"></div>
+</div>
+
+<!-- Incident Panel -->
+<div id="incident-panel">
+  <div id="ip-header">
+    <span style="font-size:12px;font-weight:600;color:#90caf9;letter-spacing:0.5px;">ИНЦИДЕНТЫ</span>
+    <span id="ip-count" style="font-size:10px;color:#546e7a;"></span>
+  </div>
+  <div id="ip-body"></div>
+  <div class="window-resize-handle"></div>
+</div>
+
+<!-- Model Logs Panel -->
+<div id="model-logs-panel">
+  <div id="ml-header">
+    <div id="ml-title">
+      <span>⚙️ Логи моделей</span>
+      <span id="ml-count" style="font-size:9px;color:#546e7a;">...</span>
+      <button class="ml-dismiss-btn" onclick="dismissWarnings()" title="Сбросить цвет кнопки на зелёный">Отменить</button>
+      <button class="ml-close-btn" onclick="closeModelLogs()" title="Закрыть">&times;</button>
+    </div>
+    <div class="ml-btns">
+      <button class="ml-btn active" data-slot="all">Все</button>
+      <button class="ml-btn" data-slot="MAIN">MAIN</button>
+      <button class="ml-btn" data-slot="HEAVY">HEAVY</button>
+      <button class="ml-btn" data-slot="LIGHT">LIGHT</button>
+    </div>
+  </div>
+  <div id="ml-body">
+    <div class="ml-filter-row">
+      <select class="ml-filter-select" id="ml-status-filter">
+        <option value="all">Все статусы</option>
+        <option value="success">Успех</option>
+        <option value="error">Ошибка</option>
+        <option value="timeout">Таймаут</option>
+      </select>
+      <input type="text" class="ml-time-range" id="ml-time-range" placeholder="Период (начало – конец)" readonly>
+    </div>
+    <div id="ml-logs-list" style="font-size:10px;"></div>
+  </div>
+  <div class="ml-resize-handle"></div><div class="window-resize-handle"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 let graphData = { nodes: [], edges: [] };
 let nodeMap = {};
+let infraVisible = true; // toggle state for infrastructure layer visibility
+
+function toggleInfra() {
+  infraVisible = !infraVisible;
+  Object.values(nodeObjects).forEach(obj => {
+    if (obj.data.layer === 'vm' || obj.data.type === 'Disk Array' || obj.data.type === 'VM Coordinator' || obj.data.type === 'VM') {
+      obj.group.visible = infraVisible;
+    }
+  });
+  // Toggle VM-layer edges and platform objects
+  scene.children.forEach(child => {
+    if (child.userData && child.userData.infra) {
+      child.visible = infraVisible;
+    }
+  });
+  const btn = document.getElementById('infra-btn');
+  if (btn) {
+    btn.style.opacity = infraVisible ? '1' : '0.5';
+    btn.textContent = infraVisible ? '🖥 Инфраструктура' : '🖥 Инфра (скрыта)';
+  }
+  addTickerEvent('info', infraVisible ? '🖥 Уровень инфраструктуры включён' : '🖥 Уровень инфраструктуры скрыт');
+}
 
 async function fetchGraph() {
   try {
     const resp = await fetch('/api/gigascope/graph');
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    graphData = await resp.json();
+    const raw = await resp.json();
+    // Transform to 2-layer sandwich: services on top, VMs on bottom
+    graphData = transformGraph(raw);
     graphData.nodes.forEach(n => { nodeMap[n.id] = n; });
     document.getElementById('total-count').textContent = graphData.nodes.length;
     return true;
@@ -154,13 +545,34 @@ async function fetchGraph() {
   }
 }
 
+// Keep the API as the single source of truth; this function only normalizes
+// fields needed by the renderer and discards dangling edges.
+function transformGraph(raw) {
+  const nodes = (raw.nodes || [])
+    .filter(n => n && n.id)
+    .map(n => ({
+      ...n,
+      status: n.status || 'unknown',
+      open_incidents: Number(n.open_incidents || 0),
+      _live_status: n.status || 'healthy',
+      _live_open_incidents: Number(n.open_incidents || 0),
+      layer: n.layer || (n.type === 'VirtualMachine' || String(n.type || '').startsWith('VM') || n.type === 'Disk Array' ? 'vm' : 'services')
+    }));
+  const nodeIds = new Set(nodes.map(n => n.id));
+  const edges = (raw.edges || [])
+    .filter(e => e && nodeIds.has(e.source) && nodeIds.has(e.target))
+    .map(e => ({ ...e, type: e.type || 'unknown' }));
+  return { nodes, edges };
+}
+
 const container = document.getElementById('graph-container');
 let width = container.clientWidth, height = container.clientHeight;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0e1a);
 scene.fog = new THREE.FogExp2(0x0a0e1a, 0.018);
-const camera = new THREE.PerspectiveCamera(40, width/height, 0.1, 60);
-camera.position.set(0, 7, 14);
+const camera = new THREE.PerspectiveCamera(35, width/height, 0.1, 60);
+camera.position.set(24, 18, 24);
+camera.lookAt(0, -1, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(width, height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -182,43 +594,411 @@ pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
 const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x4488ff, size: 0.04, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending }));
 scene.add(particles);
 
-for (let r of [3, 5.5, 8]) {
-  const rg = new THREE.RingGeometry(r - 0.02, r + 0.02, 64);
-  const rm = new THREE.MeshBasicMaterial({ color: 0x1a2a4a, side: THREE.DoubleSide, transparent: true, opacity: 0.2, depthWrite: false });
-  const ring = new THREE.Mesh(rg, rm);
-  ring.rotation.x = -Math.PI / 2;
-  scene.add(ring);
+// Layer heights — 2-layer sandwich: services on top, VMs on bottom
+const LAYER_Y = { vm: -5, services: 3 };
+
+// Layer platform planes (flat layers like a sandwich)
+const LAYER_COLORS = {
+  vm: 0x1a3a5a,
+  services: 0x1a2a4a,
+};
+const LAYER_LABELS = { vm: 'ВИРТУАЛЬНЫЕ МАШИНЫ', services: 'ПРОГРАММНЫЕ СЕРВИСЫ' };
+
+// Build glass platform for each layer
+const layerNames = ['vm', 'services'];
+const platformSize = 14;
+layerNames.forEach((layer, li) => {
+  const y = LAYER_Y[layer];
+  const geo = new THREE.PlaneGeometry(platformSize, platformSize);
+  const mat = new THREE.MeshBasicMaterial({
+    color: LAYER_COLORS[layer],
+    transparent: true,
+    opacity: 0.12,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  const plane = new THREE.Mesh(geo, mat);
+  plane.rotation.x = -Math.PI / 2;
+  plane.position.set(0, y, 0);
+  if (layer === 'vm') plane.userData.infra = true;
+  scene.add(plane);
+
+  // Thin glowing edge ring
+  const edgeGeo = new THREE.EdgesGeometry(geo);
+  const edgeMat = new THREE.LineBasicMaterial({
+    color: 0x4488ff,
+    transparent: true,
+    opacity: 0.15 + li * 0.05
+  });
+  const edgeLine = new THREE.LineSegments(edgeGeo, edgeMat);
+  edgeLine.position.copy(plane.position);
+  if (layer === 'vm') edgeLine.userData.infra = true;
+  scene.add(edgeLine);
+
+  // Layer label sprite
+  const lc = document.createElement('canvas');
+  lc.width = 1024; lc.height = 72;
+  const lctx = lc.getContext('2d');
+  lctx.fillStyle = '#546e7a';
+  lctx.font = 'bold 28px "Segoe UI",sans-serif';
+  lctx.textAlign = 'left'; lctx.textBaseline = 'middle';
+  lctx.shadowColor = 'rgba(10,14,26,0.95)'; lctx.shadowBlur = 12;
+  lctx.fillText(LAYER_LABELS[layer], 24, 36);
+  const lspr = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(lc),
+    transparent: true,
+    depthWrite: false,
+    opacity: 0.6
+  }));
+  lspr.scale.set(7, 0.5, 1);
+  lspr.position.set(-5.2, y + 0.1, -5.2);
+  if (layer === 'vm') lspr.userData.infra = true;
+  scene.add(lspr);
+});
+
+// Vertical connector lines between layers (subtle glass pillars)
+for (let x = -3; x <= 3; x += 2) {
+  for (let z = -3; z <= 3; z += 2) {
+    const points = [
+      new THREE.Vector3(x, LAYER_Y.vm, z),
+      new THREE.Vector3(x, LAYER_Y.services, z)
+    ];
+    const g = new THREE.BufferGeometry().setFromPoints(points);
+    const m = new THREE.LineBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.04 });
+    scene.add(new THREE.Line(g, m));
+  }
 }
+
+// VM-VM connections (all VMs on bottom layer linked for network)
+setTimeout(() => {
+  const vmNodes = Object.values(nodeObjects).filter(o => o.data.layer === 'vm');
+  for (let i = 0; i < vmNodes.length; i++) {
+    for (let j = i + 1; j < vmNodes.length; j++) {
+      const a = vmNodes[i], b = vmNodes[j];
+      const sv = new THREE.Vector3(a.group.position.x, LAYER_Y.vm + 0.3, a.group.position.z);
+      const tv = new THREE.Vector3(b.group.position.x, LAYER_Y.vm + 0.3, b.group.position.z);
+      const geo = new THREE.BufferGeometry().setFromPoints([sv, tv]);
+      const mat = new THREE.LineBasicMaterial({
+        color: 0x4dd0e1,
+        transparent: true,
+        opacity: 0.2,
+        blending: THREE.AdditiveBlending
+      });
+      const vmLine = new THREE.Line(geo, mat);
+      vmLine.userData.infra = true;
+      scene.add(vmLine);
+    }
+  }
+}, 100);
 
 const nodeObjects = {};
 const flowParticles = [];
-const layerRadii = { gateway: 0.5, services: 3.5, infra: 6.5 };
+// XZ grid positions per layer — n nodes spread evenly on the platform
+function gridPositions(count, maxSpread) {
+  if (count === 0) return [];
+  if (count === 1) return [{ x: 0, z: 0 }];
+  const cols = Math.ceil(Math.sqrt(count));
+  const rows = Math.ceil(count / cols);
+  const spacing = maxSpread / Math.max(cols, rows);
+  const positions = [];
+  let idx = 0;
+  for (let r = 0; r < rows && idx < count; r++) {
+    for (let c = 0; c < cols && idx < count; c++) {
+      const x = (c - (cols - 1) / 2) * spacing;
+      const z = (r - (rows - 1) / 2) * spacing;
+      positions.push({ x, z });
+      idx++;
+    }
+  }
+  return positions;
+}
+const layerRadii = { services: 3, vm: 6 };
 let selectedNodeId = null;
+
+// === Cascade Overlay ===
+let cascadeLines = [];
+let cascadeRings = [];
+const cascadeHighlightedNodes = new Set();
+let cascadePulsePhase = 0;
+
+function clearCascadeOverlay() {
+  cascadeLines.forEach(l => scene.remove(l));
+  cascadeRings.forEach(r => scene.remove(r));
+  cascadeLines = [];
+  cascadeRings = [];
+  cascadeHighlightedNodes.clear();
+  // Reset all node emissive and color
+  Object.values(nodeObjects).forEach(obj => {
+    obj.mesh.material.emissiveIntensity = 0.15;
+    const s = _demoNodeView(obj.data).status;
+    if (s === 'healthy') obj.mesh.material.color.setHex(0x22c55e);
+    else if (s === 'warning') obj.mesh.material.color.setHex(0xffd600);
+    else obj.mesh.material.color.setHex(0xff1744);
+  });
+}
+
+function showCascadeOnGraph(cascadeData) {
+  clearCascadeOverlay();
+  // Приоритет 1: cascade_paths — полные пути сервисов от Engine
+  const paths = cascadeData.cascade_paths || [];
+  if (paths.length > 0) {
+    drawCascadePaths(paths);
+    return;
+  }
+  // Приоритет 2: chains — внутренний формат Engine, конвертируем в пути сервисов
+  const chains = cascadeData.chains || [];
+  if (chains.length > 0) {
+    const chainPaths = [];
+    const seen = new Set();
+    chains.forEach(ch => {
+      const svcPath = (ch.path || []).map(step => step.service).filter(Boolean);
+      const sig = svcPath.join('→');
+      if (svcPath.length >= 2 && !seen.has(sig)) {
+        seen.add(sig);
+        chainPaths.push(svcPath);
+      }
+    });
+    if (chainPaths.length > 0) {
+      drawCascadePaths(chainPaths);
+      return;
+    }
+  }
+  // Fallback на плоские cascades (обратная совместимость)
+  const cascades = cascadeData.cascades || [];
+  if (cascades.length === 0) return;
+  const legacyPaths = [];
+  const dedup = new Set();
+  cascades.forEach(c => {
+    const pair = [c.source.service, c.target.service];
+    const sig = pair.join('→');
+    if (!dedup.has(sig)) {
+      dedup.add(sig);
+      legacyPaths.push(pair);
+    }
+  });
+  drawCascadePaths(legacyPaths);
+}
+
+function drawCascadePaths(paths) {
+  // paths — массив массивов сервисов: [["Database","PaymentService","TransactionService"], ...]
+  const processedEdges = new Set();
+
+  paths.forEach(path => {
+    if (path.length < 2) return;
+
+    // Подсвечиваем ВСЕ узлы пути
+    path.forEach((svc, idx) => {
+      const obj = nodeObjects[svc];
+      if (!obj) return;
+      if (idx === 0) {
+        // Первый узел — источник — ярко-красный
+        obj.mesh.material.emissiveIntensity = 0.8;
+        obj.mesh.material.color.setHex(0xff1744);
+      } else {
+        // Все остальные (промежуточные и конечные) — жёлтые
+        obj.mesh.material.emissiveIntensity = 0.6;
+        obj.mesh.material.color.setHex(0xffd600);
+      }
+      cascadeHighlightedNodes.add(svc);
+    });
+
+    // Рисуем линии и кольца между КАЖДОЙ парой соседних узлов
+    for (let i = 0; i < path.length - 1; i++) {
+      const srcSvc = path[i], tgtSvc = path[i + 1];
+      const edgeKey = srcSvc + '→' + tgtSvc;
+      if (processedEdges.has(edgeKey)) continue;
+      processedEdges.add(edgeKey);
+
+      const srcObj = nodeObjects[srcSvc];
+      const tgtObj = nodeObjects[tgtSvc];
+      if (!srcObj || !tgtObj) continue;
+
+      const sv = new THREE.Vector3(srcObj.group.position.x, srcObj.group.position.y + 0.3, srcObj.group.position.z);
+      const tv = new THREE.Vector3(tgtObj.group.position.x, tgtObj.group.position.y + 0.3, tgtObj.group.position.z);
+      const geo = new THREE.BufferGeometry().setFromPoints([sv, tv]);
+      const mat = new THREE.LineBasicMaterial({ color: 0xff1744, transparent: true, opacity: 0.8 });
+      const line = new THREE.Line(geo, mat);
+      scene.add(line);
+      cascadeLines.push(line);
+
+      // Пульсирующее кольцо в середине ребра
+      const mid = new THREE.Vector3().addVectors(sv, tv).multiplyScalar(0.5);
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.15, 0.25, 24),
+        new THREE.MeshBasicMaterial({ color: 0xff1744, transparent: true, opacity: 0.6, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+      );
+      ring.position.copy(mid);
+      ring.lookAt(camera.position);
+      scene.add(ring);
+      cascadeRings.push(ring);
+    }
+  });
+}
+
+async function showCascadeForHyp(hypId) {
+  // Fetch the hypothesis detail
+  try {
+    const [resp, incResp] = await Promise.all([
+      fetch('/api/gigascope/hypotheses/' + hypId),
+      fetch('/api/gigascope/incidents')
+    ]);
+    if (!resp.ok || !incResp.ok) return;
+    const d = await resp.json();
+    const incData = await incResp.json();
+    const related = d.related_incidents || [];
+    if (related.length < 2) {
+      addTickerEvent('info', '⚠️ Для этой гипотезы недостаточно инцидентов для каскада');
+      return;
+    }
+    // Build service map from incident IDs — related is array of {incident_id, service, severity, status}
+    // or an array of plain incident ID strings. Handle both.
+    const allIncidents = incData.incidents || [];
+    const incById = {};
+    allIncidents.forEach(i => { incById[i.id] = i; });
+    const relatedServices = new Set();
+    related.forEach(r => {
+      // r can be a string (plain ID) or an object {incident_id, service, ...}
+      if (typeof r === 'string') {
+        const inc = incById[r];
+        if (inc && inc.service_name) relatedServices.add(inc.service_name);
+      } else {
+        // Object form — service field is directly available
+        const svc = r.service || r.service_name;
+        if (svc) relatedServices.add(svc);
+      }
+    });
+    // Get cascade data and filter by services involved
+    const cascadeResp = await fetch('/api/gigascope/engine/cascades', { method: 'POST' });
+    if (!cascadeResp.ok) return;
+    const cascadeData = await cascadeResp.json();
+    // Фильтруем cascade_paths — полные пути сервисов, где хотя бы один сервис относится к гипотезе
+    const filteredPaths = (cascadeData.cascade_paths || []).filter(path =>
+      path.some(svc => relatedServices.has(svc))
+    );
+    // Фильтруем chains — внутренние цепочки Engine, по сервисам гипотезы
+    const filteredChains = (cascadeData.chains || []).filter(ch => {
+      const chainServices = (ch.path || []).map(step => step.service).filter(Boolean);
+      return chainServices.some(svc => relatedServices.has(svc));
+    });
+    // Передаём filteredPaths, а если их нет — filteredChains (showCascadeOnGraph сама разберёт приоритеты)
+    const filteredData = {};
+    if (filteredPaths.length > 0) {
+      filteredData.cascade_paths = filteredPaths;
+    }
+    if (filteredChains.length > 0) {
+      filteredData.chains = filteredChains;
+    }
+    // Если есть хоть что-то — показываем
+    if (filteredData.cascade_paths || filteredData.chains) {
+      showCascadeOnGraph(filteredData);
+      addTickerEvent('ok', '⚡ Каскад подсвечен на графе для гипотезы ' + hypId);
+    } else {
+      addTickerEvent('info', '⚠️ Каскады не обнаружены для этой гипотезы');
+    }
+  } catch(e) {}
+}
+
+async function analyzeHypothesis(hypId) {
+  const area = document.getElementById('hyp-analysis-area');
+  if (!area) return;
+  if (area.style.display !== 'none' && area.dataset.hypId === hypId) {
+    area.style.display = 'none';
+    return;
+  }
+  area.style.display = 'block';
+  area.dataset.hypId = hypId;
+  area.innerHTML = '<div style="font-size:11px;color:#78909c;padding:8px;text-align:center">🔍 Анализирую...</div>';
+  try {
+    const resp = await fetch('/api/gigascope/engine/analyze/hypothesis/' + hypId, { method: 'POST' });
+    const data = resp.ok ? await resp.json() : null;
+    if (data && (data.analysis || data.summary)) {
+      const text = data.analysis || data.summary || 'Нет данных для анализа.';
+      area.innerHTML = `<div style="background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);border-radius:10px;padding:12px">
+        <div style="font-size:10px;font-weight:600;color:#80d8ff;letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase">🧠 Анализ паттерна</div>
+        <div style="font-size:12px;color:#c9d1d9;line-height:1.6">${text}</div>
+        ${data.cascade_found ? '<div style="margin-top:6px;font-size:10px;color:#ff8a80">⚠️ Обнаружена каскадная цепочка</div>' : ''}
+        ${data.pattern_count ? '<div style="margin-top:4px;font-size:10px;color:#a5d6a7">📊 Похожих паттернов: ' + data.pattern_count + '</div>' : ''}
+      </div>`;
+    } else {
+      area.innerHTML = '<div style="font-size:11px;color:#78909c;padding:8px;text-align:center">⚠️ API не вернул анализ для этой гипотезы</div>';
+    }
+  } catch(e) {
+    area.innerHTML = '<div style="font-size:11px;color:#ff8a80;padding:8px;text-align:center">❌ Ошибка при анализе гипотезы</div>';
+  }
+}
+
+// Helper: lookup a VM by id from the vmNodes array (before nodeObjects is populated)
+function nodeObjects_vmLookup(vmId, vmNodes) {
+  return vmNodes.find(v => v.id === vmId) || null;
+}
 
 function buildGraph() {
   const nodes = graphData.nodes;
   const edges = graphData.edges;
 
-  // Layout
-  const layerGroups = {};
-  nodes.forEach(n => {
-    if (!layerGroups[n.layer]) layerGroups[n.layer] = [];
-    layerGroups[n.layer].push(n);
+  // Layout — services spread on top, VMs directly below their services
+  const vmNodes = nodes.filter(n => n.layer === 'vm');
+  const svcNodes = nodes.filter(n => n.layer === 'services');
+
+  // 1. Place services in a wide row on the services layer
+  const svcSpread = 18;
+  const svcPositions = gridPositions(svcNodes.length, svcSpread);
+  svcNodes.forEach((n, i) => {
+    const p = svcPositions[i] || { x: 0, z: 0 };
+    n._x = p.x;
+    n._z = p.z;
+    n._y = LAYER_Y.services;
   });
-  Object.entries(layerGroups).forEach(([layer, ln]) => {
-    const r = layerRadii[layer] || 4;
-    ln.forEach((n, i) => {
-      n._x = Math.cos((i / ln.length) * Math.PI * 2 - Math.PI / 2) * r;
-      n._z = Math.sin((i / ln.length) * Math.PI * 2 - Math.PI / 2) * r;
+
+  // 2. Place each VM directly below its service. The API emits hosted_on
+  // as VM → service, so the source is the VM and the target is the service.
+  vmNodes.forEach(n => {
+    n._x = 0; n._z = 0; n._y = LAYER_Y.vm;
+    const hostedEdge = edges.find(e => e.source === n.id && e.type === 'hosted_on');
+    if (hostedEdge) {
+      const svc = svcNodes.find(s => s.id === hostedEdge.target);
+      if (svc) {
+        n._x = svc._x;
+        n._z = svc._z;
+      }
+    }
+  });
+
+  // 3. Database cluster below the Database service position
+  const dbSvc = svcNodes.find(s => s.type === 'database');
+  if (dbSvc) {
+    const dbOff = {
+      'PG-Coordinator': { x: 0,   z: 0.8 },
+      'PG-Node1':       { x: -1.3, z: -0.5 },
+      'PG-Node2':       { x:  1.3, z: -0.5 }
+    };
+    vmNodes.filter(v => dbOff[v.id]).forEach(vm => {
+      const o = dbOff[vm.id];
+      vm._x = dbSvc._x + o.x;
+      vm._z = dbSvc._z + o.z;
     });
+  }
+
+  // 4. Disk arrays below their database nodes, derived from storage edges
+  vmNodes.filter(v => v.type === 'Disk Array').forEach(disk => {
+    const storageEdge = edges.find(e => e.source === disk.id && e.type === 'storage_link');
+    const parent = storageEdge && vmNodes.find(v => v.id === storageEdge.target);
+    if (parent) {
+      disk._x = parent._x + (disk.id.endsWith('1') ? -0.7 : 0.7);
+      disk._z = parent._z - 1.1;
+    }
   });
 
   // Nodes
   nodes.forEach(n => {
     const g = new THREE.Group();
-    g.position.set(n._x, 0, n._z);
-    const sz = n.layer === 'gateway' ? 0.65 : n.layer === 'infra' ? 0.85 : 0.75;
-    const col = n.status === 'healthy' ? 0x22c55e : n.status === 'warning' ? 0xffd600 : 0xff1744;
+    g.position.set(n._x, n._y, n._z);
+    // VM nodes bigger, service nodes medium, storage small
+    const sz = n.layer === 'vm'
+      ? (n.type === 'Disk Array' ? 0.45 : n.type === 'VM Coordinator' ? 0.5 : 0.7)
+      : n.type === 'gateway' ? 0.6 : n.type === 'database' ? 0.65 : 0.55;
+    const nodeStatus = _demoNodeStatus(n);
+    const col = nodeStatus === 'healthy' ? 0x22c55e : nodeStatus === 'warning' ? 0xffd600 : 0xff1744;
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(sz, 32, 32),
       new THREE.MeshPhysicalMaterial({ color: col, emissive: col, emissiveIntensity: 0.15, metalness: 0.2, roughness: 0.3, clearcoat: 0.4 })
@@ -265,36 +1045,52 @@ function buildGraph() {
     nodeObjects[n.id] = { group: g, mesh, data: n };
   });
 
-  // Edges
+  // Edges — vertical connections between layers with Z-curves
   edges.forEach(e => {
     const s = nodeObjects[e.source], t = nodeObjects[e.target];
     if (!s || !t) return;
-    const sv = new THREE.Vector3(s.group.position.x, 0, s.group.position.z);
-    const tv = new THREE.Vector3(t.group.position.x, 0, t.group.position.z);
-    const mid = new THREE.Vector3().addVectors(sv, tv).multiplyScalar(0.5);
-    mid.y += 0.25;
-    const curve = new THREE.QuadraticBezierCurve3(sv, mid, tv);
-    const isSync = e.type === 'sync';
-    const col = isSync ? 0x4dd0e1 : 0xffd740;
-    const opacity = isSync ? 0.3 : 0.2;
+    const sv = new THREE.Vector3(s.group.position.x, s.group.position.y, s.group.position.z);
+    const tv = new THREE.Vector3(t.group.position.x, t.group.position.y, t.group.position.z);
+    const yMid = (sv.y + tv.y) / 2;
+    const mid = new THREE.Vector3((sv.x + tv.x) / 2, yMid, (sv.z + tv.z) / 2);
 
+    // Colour and style by edge type
+    let col, opacity, tubeRadius, particleCount;
+    switch (e.type) {
+      case 'sync':       col = 0x4dd0e1; opacity = 0.35; tubeRadius = 0.025; particleCount = 2; break;
+      case 'async':      col = 0xffd740; opacity = 0.25; tubeRadius = 0.025; particleCount = 1; break;
+      case 'hosted_on':  col = 0x4488ff; opacity = 0.5;  tubeRadius = 0.03;  particleCount = 0; break;
+      case 'cluster_link': col = 0x6ab7ff; opacity = 0.4; tubeRadius = 0.022; particleCount = 0; break;
+      case 'storage_link': col = 0x66bb6a; opacity = 0.4; tubeRadius = 0.022; particleCount = 0; break;
+      case 'network':    col = 0x4dd0e1; opacity = 0.12; tubeRadius = 0.015; particleCount = 0; break;
+      default:           col = 0x4dd0e1; opacity = 0.25; tubeRadius = 0.025; particleCount = 1; break;
+    }
+
+    // Straight line for same-layer edges, bezier for cross-layer
+    const sameLayer = Math.abs(sv.y - tv.y) < 0.5;
+    const curve = sameLayer
+      ? new THREE.LineCurve3(sv, tv)
+      : new THREE.QuadraticBezierCurve3(sv, mid, tv);
     const tube = new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 18, 0.025, 4, false),
+      new THREE.TubeGeometry(curve, sameLayer ? 2 : 24, tubeRadius, 4, false),
       new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity, blending: THREE.AdditiveBlending })
     );
+    // Tag infra-related edges so toggleInfra() can hide them
+    if (e.type === 'hosted_on' || e.type === 'cluster_link' || e.type === 'storage_link' || e.type === 'network') {
+      tube.userData.infra = true;
+    }
     scene.add(tube);
 
-    // Flow particles
-    const count = isSync ? 2 : 1;
-    for (let i = 0; i < count; i++) {
+    // Flow particles only for sync/async
+    for (let i = 0; i < particleCount; i++) {
       const pm = new THREE.Mesh(
-        new THREE.SphereGeometry(isSync ? 0.04 : 0.03, 4, 4),
+        new THREE.SphereGeometry(0.04, 4, 4),
         new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending })
       );
       const tVal = Math.random();
       pm.position.copy(curve.getPoint(tVal));
       scene.add(pm);
-      flowParticles.push({ mesh: pm, curve, t: tVal, speed: (0.002 + Math.random() * 0.003) * (isSync ? 1.5 : 1) });
+      flowParticles.push({ mesh: pm, curve, t: tVal, speed: (0.002 + Math.random() * 0.003) * (e.type === 'sync' ? 1.5 : 1) });
     }
   });
 
@@ -304,7 +1100,8 @@ function buildGraph() {
 
 function updateCounts() {
   let n = 0, w = 0, c = 0;
-  graphData.nodes.forEach(x => {
+  graphData.nodes.forEach(node => {
+    const x = _demoNodeView(node);
     if (x.status === 'healthy') n++;
     else if (x.status === 'warning') w++;
     else c++;
@@ -321,44 +1118,124 @@ function closePanel() {
     if (obj) obj.mesh.material.emissiveIntensity = 0.15;
     selectedNodeId = null;
   }
+  clearCascadeOverlay();
+  // Restore full hypothesis list and incident list
+  pollHypotheses();
+  pollIncidents();
 }
 
-function showNodeDetails(id) {
+function edgeDisplay(type) {
+  const displays = {
+    sync:         { label: 'REST/gRPC', cssClass: 'ok' },
+    async:        { label: 'Kafka', cssClass: 'warn' },
+    hosted_on:    { label: 'Размещён на', cssClass: 'info' },
+    cluster_link: { label: 'Связь кластера', cssClass: 'info' },
+    storage_link: { label: 'Подключение СХД', cssClass: 'ok' },
+    network:      { label: 'Сетевая связь', cssClass: 'info' }
+  };
+  return displays[type] || { label: type || 'Неизвестный тип', cssClass: 'info' };
+}
+
+function escapeText(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showNodeDetails(id, refreshData = true) {
   selectedNodeId = id;
-  const n = nodeObjects[id]?.data;
-  if (!n) return;
+  const sourceNode = nodeObjects[id]?.data;
+  if (!sourceNode) return;
+  const n = _demoNodeView(sourceNode);
+  // Refresh remote detail data only for a user/poll-driven render. A completed
+  // incident fetch re-renders with refreshData=false to avoid a request loop.
+  if (refreshData) {
+    pollHypotheses();
+    pollIncidents();
+  }
   const m = n.metadata || {};
   Object.values(nodeObjects).forEach(obj => {
     obj.mesh.material.emissiveIntensity = obj.data.id === id ? 0.5 : 0.15;
   });
   document.getElementById('panel-title').textContent = n.id;
-  document.getElementById('panel-subtitle').textContent = n.type + ' · ' + (n.layer === 'gateway' ? 'Шлюз' : n.layer === 'services' ? 'Банковский сервис' : 'Инфраструктура');
+  document.getElementById('panel-subtitle').textContent = n.type + ' · ' + (n.layer === 'services' ? 'Программный сервис' : n.type === 'Disk Array' ? 'Дисковый массив' : 'Виртуальная машина');
 
-  let html = `<div style="margin-bottom:12px;"><span class="badge ${n.status === 'healthy' ? 'ok' : n.status === 'warning' ? 'warn' : 'crit'}" style="font-size:12px;">${n.status === 'healthy' ? 'Норма' : n.status === 'warning' ? 'Внимание' : 'Критично'}</span><span class="badge info" style="font-size:12px;margin-left:4px;">${n.layer === 'gateway' ? 'Шлюз' : n.layer === 'services' ? 'Банковский сервис' : 'Инфраструктура'}</span></div>`;
+  let html = `<div style="margin-bottom:12px;"><span class="badge ${n.status === 'healthy' ? 'ok' : n.status === 'warning' ? 'warn' : 'crit'}" style="font-size:12px;">${n.status === 'healthy' ? 'Норма' : n.status === 'warning' ? 'Внимание' : 'Критично'}</span><span class="badge info" style="font-size:12px;margin-left:4px;">${n.layer === 'services' ? 'Программный сервис' : n.type === 'Disk Array' ? 'Дисковый массив' : 'Виртуальная машина'}</span></div>`;
   html += '<h3 style="font-size:12px;color:#90caf9;margin:0 0 6px;letter-spacing:0.5px;">МЕТАДАННЫЕ</h3>';
-  if (m.port) html += `<div class="metric-row"><span class="metric-label">Порт</span><span class="metric-value">${m.port}</span></div>`;
-  if (m.version) html += `<div class="metric-row"><span class="metric-label">Версия</span><span class="metric-value">${m.version}</span></div>`;
-  if (m.type) html += `<div class="metric-row"><span class="metric-label">СУБД</span><span class="metric-value">${m.type}</span></div>`;
-  if (m.topics !== undefined) html += `<div class="metric-row"><span class="metric-label">Топики Kafka</span><span class="metric-value">${m.topics}</span></div>`;
+  const metadataLabels = {
+    port: 'Порт',
+    version: 'Версия',
+    type: 'СУБД',
+    topics: 'Топики Kafka',
+    cpu: 'CPU, ядер',
+    ram: 'RAM, ГБ',
+    role: 'Роль',
+    endpoint: 'Endpoint',
+    capacity: 'Ёмкость'
+  };
+  Object.entries(m).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    const label = metadataLabels[key] || key;
+    html += `<div class="metric-row"><span class="metric-label">${escapeText(label)}</span><span class="metric-value">${escapeText(value)}</span></div>`;
+  });
 
   html += '<h3 style="font-size:12px;color:#90caf9;margin:12px 0 6px;letter-spacing:0.5px;">СВЯЗИ</h3>';
   const outgoing = graphData.edges.filter(e => e.source === id);
   const incoming = graphData.edges.filter(e => e.target === id);
   if (outgoing.length > 0) {
     html += '<div style="margin-bottom:6px;"><div style="font-size:10px;color:#4dd0e1;margin-bottom:4px;">→ Исходящие:</div>';
-    outgoing.forEach(e => { const lbl = e.type === 'sync' ? 'ok' : 'warn'; html += `<div class="metric-row"><span class="metric-label" style="color:#b0bec5;">→ ${e.target}</span><span class="metric-value ${lbl}" style="font-size:10px;">${e.type === 'sync' ? 'REST/gRPC' : 'Kafka'}</span></div>`; });
+    outgoing.forEach(e => { const display = edgeDisplay(e.type); html += `<div class="metric-row"><span class="metric-label" style="color:#b0bec5;">→ ${e.target}</span><span class="metric-value ${display.cssClass}" style="font-size:10px;">${display.label}</span></div>`; });
     html += '</div>';
   }
   if (incoming.length > 0) {
     html += '<div><div style="font-size:10px;color:#4dd0e1;margin-bottom:4px;">← Входящие:</div>';
-    incoming.forEach(e => { const lbl = e.type === 'sync' ? 'ok' : 'warn'; html += `<div class="metric-row"><span class="metric-label" style="color:#b0bec5;">← ${e.source}</span><span class="metric-value ${lbl}" style="font-size:10px;">${e.type === 'sync' ? 'REST/gRPC' : 'Kafka'}</span></div>`; });
+    incoming.forEach(e => { const display = edgeDisplay(e.type); html += `<div class="metric-row"><span class="metric-label" style="color:#b0bec5;">← ${e.source}</span><span class="metric-value ${display.cssClass}" style="font-size:10px;">${display.label}</span></div>`; });
     html += '</div>';
   }
   if (outgoing.length === 0 && incoming.length === 0) html += '<div style="color:#546e7a;font-size:11px;">Нет связей</div>';
 
   html += `<h3 style="font-size:12px;color:#90caf9;margin:12px 0 6px;letter-spacing:0.5px;">ИНЦИДЕНТЫ</h3>`;
-  html += `<div class="metric-row"><span class="metric-label">Открытых инцидентов</span><span class="metric-value ${n.open_incidents > 0 ? 'crit' : 'ok'}">${n.open_incidents}</span></div>`;
-  html += n.open_incidents > 0 ? '<div style="color:#546e7a;font-size:10px;margin-top:4px;">Запустите демо-сценарий для симуляции</div>' : '<div style="color:#546e7a;font-size:10px;margin-top:4px;">Все системы в норме</div>';
+  const nodeName = n.id || n.name || null;
+  const nodeIncs = (window._allIncidents || []).filter(i => {
+    const s = i.service || i.service_name || i.service_id;
+    return s && nodeName && s === nodeName;
+  });
+  const incidentsLoaded = Array.isArray(window._allIncidents);
+  if (!incidentsLoaded) {
+    const apiCount = Number(n.open_incidents || 0);
+    html += `<div class="metric-row"><span class="metric-label">Открытых инцидентов</span><span class="metric-value ${apiCount > 0 ? 'crit' : 'ok'}">${apiCount}</span></div>`;
+    html += '<div style="color:#546e7a;font-size:10px;margin-top:4px;">Загрузка подробностей…</div>';
+  } else if (nodeIncs.length === 0) {
+    html += `<div class="metric-row"><span class="metric-label">Открытых инцидентов</span><span class="metric-value ok">0</span></div>`;
+    html += '<div style="color:#546e7a;font-size:10px;margin-top:4px;">Открытых инцидентов нет</div>';
+  } else {
+    const open = nodeIncs.filter(i => i.status === 'open' || i.status === 'active');
+    html += `<div class="metric-row"><span class="metric-label">Открытых инцидентов</span><span class="metric-value ${open.length > 0 ? 'crit' : 'ok'}">${open.length}</span></div>`;
+    nodeIncs.forEach((inc, idx) => {
+      const sev = (inc.severity || 'info').toLowerCase();
+      const sevLabel = sev === 'critical' ? 'КРИТ' : sev === 'warning' ? 'ВНИМ' : 'ИНФО';
+      const status = (inc.status || '').toLowerCase();
+      const statusLabel = status === 'open' || status === 'active' ? 'Открыт' : 'Решён';
+      const startTime = inc.started_at ? new Date(inc.started_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
+      const safeDesc = (inc.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const safeTitle = (inc.type || inc.id || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      html += `<div class="nd-inc-card" onclick="toggleNodeIncidentDesc('${nodeName}-${idx}')">
+        <div class="nd-inc-head">
+          <span class="nd-inc-title">${safeTitle}</span>
+          <span class="ip-sev ip-sev-${sev}">${sevLabel}</span>
+          <span class="ip-status-badge ip-status-${status === 'open' || status === 'active' ? 'open' : 'resolved'}">${statusLabel}</span>
+        </div>
+        <div class="nd-inc-meta">
+          <span>${(inc.id || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>
+          <span>${startTime}</span>
+        </div>
+        <div class="ip-desc" id="nd-inc-desc-${nodeName}-${idx}">${safeDesc || '<i>(нет описания)</i>'}</div>
+      </div>`;
+    });
+  }
 
   document.getElementById('panel-body').innerHTML = html;
   document.getElementById('sidebar').classList.add('open');
@@ -382,7 +1259,7 @@ function setupInteraction() {
       const hit = hits[0].object;
       for (const [id, obj] of Object.entries(nodeObjects)) {
         if (obj.mesh === hit) {
-          const n = obj.data, m = n.metadata || {};
+          const n = _demoNodeView(obj.data), m = n.metadata || {};
           tooltip.innerHTML = `<div class="tt-name">${n.id}</div>
             <div class="tt-row"><span class="tt-label">Тип</span><span class="tt-val">${n.type}</span></div>
             <div class="tt-row"><span class="tt-label">Статус</span><span class="tt-val ${n.status === 'healthy' ? 'ok' : n.status === 'warning' ? 'warn' : 'crit'}">${n.status === 'healthy' ? 'Норма' : n.status === 'warning' ? 'Внимание' : 'Критично'}</span></div>
@@ -498,6 +1375,15 @@ function setupInteraction() {
     // Node breathing (emissive pulsing)
     breatheNodes();
 
+    // Cascade ring pulse
+    cascadePulsePhase += 0.04;
+    cascadeRings.forEach((ring, i) => {
+      const scale = 1 + Math.sin(cascadePulsePhase + i * 1.5) * 0.15;
+      ring.scale.set(scale, scale, scale);
+      ring.material.opacity = 0.4 + Math.sin(cascadePulsePhase + i * 1.5) * 0.2;
+      ring.lookAt(camera.position);
+    });
+
     flowParticles.forEach(fp => {
       fp.t += fp.speed;
       if (fp.t > 1) fp.t -= 1;
@@ -542,7 +1428,9 @@ let lastEventTs = null;
 function breatheNodes() {
   breathePhase += 0.02;
   Object.values(nodeObjects).forEach(obj => {
-    const s = obj.data.status;
+    // Skip cascade-highlighted nodes
+    if (cascadeHighlightedNodes.has(obj.data.id)) return;
+    const s = _demoNodeView(obj.data).status;
     if (s === 'healthy') {
       const pulse = 0.12 + Math.sin(breathePhase) * 0.06;
       obj.mesh.material.emissiveIntensity = pulse;
@@ -558,21 +1446,32 @@ async function pollStatus() {
   try {
     const resp = await fetch('/api/gigascope/graph');
     if (!resp.ok) return;
-    const data = await resp.json();
+    const data = transformGraph(await resp.json());
+    // The staged demo progressively reveals live node states. Before the
+    // button is pressed every node stays green; later stages reveal only the
+    // services relevant to the current narration.
+    data.nodes = data.nodes.map(n => _demoNodeView(n));
     // Update node statuses
     data.nodes.forEach(n => {
       if (nodeMap[n.id]) {
         const prevStatus = nodeMap[n.id].status;
+        const isCascaded = cascadeHighlightedNodes.has(n.id);
         if (prevStatus !== n.status) {
-          addTickerEvent(n.status, `${n.id}: ${prevStatus} → ${n.status}`);
-          const obj = nodeObjects[n.id];
-          if (obj) {
-            const col = n.status === 'healthy' ? 0x22c55e : n.status === 'warning' ? 0xffd600 : 0xff1744;
-            obj.mesh.material.color.setHex(col);
-            obj.mesh.material.emissive.setHex(col);
+          if (!demoBaseline) addTickerEvent(n.status, `${n.id}: ${prevStatus} → ${n.status}`);
+          // Don't overwrite cascade-highlighted colors
+          if (!isCascaded) {
+            const obj = nodeObjects[n.id];
+            if (obj) {
+              const col = (demoBaseline || n.status === 'healthy') ? 0x22c55e : n.status === 'warning' ? 0xffd600 : 0xff1744;
+              obj.mesh.material.color.setHex(col);
+              obj.mesh.material.emissive.setHex(col);
+            }
           }
         }
+        // Even when status didn't change, pollStatus would reset cascade colors when we refresh sidebar
+        // — handled above by the skip check
         nodeMap[n.id] = n;
+        if (nodeObjects[n.id]) nodeObjects[n.id].data = n;
       }
     });
     // Update counts
@@ -588,19 +1487,247 @@ async function pollStatus() {
     if (selectedNodeId && nodeMap[selectedNodeId]) showNodeDetails(selectedNodeId);
     await pollHypotheses();
     await pollEvents();
+    await pollIncidents();
   } catch(e) {}
 }
+
+async function pollIncidents() {
+  try {
+    let url = '/api/gigascope/incidents';
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    let incidents = _demoIncidents(data.incidents || []);
+    window._allIncidents = incidents;
+    if (selectedNodeId && nodeObjects[selectedNodeId]) {
+      showNodeDetails(selectedNodeId, false);
+    }
+
+    // Filter by selected node if one is active
+    const nodeId = selectedNodeId;
+    if (nodeId) {
+      const nodeData = nodeObjects[nodeId]?.data;
+      const nodeName = nodeData ? (nodeData.id || nodeData.name || '') : '';
+      if (nodeName) {
+        incidents = incidents.filter(i => {
+          const s = i.service || i.service_name || i.service_id;
+          return s && s === nodeName;
+        });
+      }
+    }
+
+    const body = document.getElementById('ip-body');
+    const countEl = document.getElementById('ip-count');
+    // Sort: critical > warning > info, then started_at desc (newest first)
+    const sevRank = { critical: 0, warning: 1, info: 2 };
+    incidents.sort((a, b) => {
+      const sa = sevRank[(a.severity || '').toLowerCase()] ?? 99;
+      const sb = sevRank[(b.severity || '').toLowerCase()] ?? 99;
+      if (sa !== sb) return sa - sb;
+      const ta = a.started_at ? new Date(a.started_at).getTime() : 0;
+      const tb = b.started_at ? new Date(b.started_at).getTime() : 0;
+      return tb - ta;
+    });
+    const openFirst = incidents.slice().sort((a, b) => {
+      const ao = (a.status === 'open' || a.status === 'active') ? 0 : 1;
+      const bo = (b.status === 'open' || b.status === 'active') ? 0 : 1;
+      return ao - bo;
+    });
+    const openCount = openFirst.filter(i => i.status === 'open' || i.status === 'active').length;
+    countEl.textContent = openCount > 0 ? `(${openCount} откр.)` : `(${incidents.length})`;
+    if (incidents.length === 0) {
+      body.innerHTML = '<div style="padding:20px;text-align:center;color:#546e7a;font-size:11px;">Нет инцидентов</div>';
+      return;
+    }
+    let html = '';
+    incidents.forEach((inc, idx) => {
+      const sev = (inc.severity || 'info').toLowerCase();
+      const sevLabel = sev === 'critical' ? 'КРИТ' : sev === 'warning' ? 'ВНИМ' : 'ИНФО';
+      const status = (inc.status || '').toLowerCase();
+      const statusLabel = status === 'open' || status === 'active' ? 'Открыт' : status === 'resolved' || status === 'closed' ? 'Решён' : status;
+      const startTime = inc.started_at ? new Date(inc.started_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+      const safeDesc = (inc.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const safeTitle = (inc.type || inc.id || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const safeService = (inc.service_name || inc.service || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      html += `<div class="ip-card" onclick="toggleIncidentDesc(${idx})">
+        <div class="ip-card-head">
+          <span class="ip-card-title">${safeTitle}</span>
+          <span class="ip-sev ip-sev-${sev}">${sevLabel}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#78909c;">
+          <span>${safeService}</span>
+          <span class="ip-status-badge ip-status-${status === 'open' || status === 'active' ? 'open' : 'resolved'}">${statusLabel}</span>
+        </div>
+        <div class="ip-meta">
+          <span>${inc.id || ''}</span>
+          <span>${startTime}</span>
+        </div>
+        <div class="ip-desc" id="ip-desc-${idx}">${safeDesc || '<i>(нет описания)</i>'}</div>
+      </div>`;
+    });
+    body.innerHTML = html;
+  } catch(e) { /* offline — keep last render */ }
+}
+
+// Poll model logs
+async function pollModelLogs() {
+  try {
+    const slotFilter = document.querySelector('.ml-btn.active')?.dataset?.slot || 'all';
+    const statusFilter = document.getElementById('ml-status-filter').value;
+
+    let url = '/api/gigascope/events?limit=50';
+    if (slotFilter !== 'all') url += '&model_category=' + slotFilter.toLowerCase();
+
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const logs = data.events || [];
+    window._allModelLogs = logs;
+    const body = document.getElementById('ml-logs-list');
+    const countEl = document.getElementById('ml-count');
+
+    // Status filter — в данных нет поля "status", все записанные события успешны
+    let filtered = logs.filter(log => {
+      if (statusFilter === 'error') return false;  // ошибок в данных нет
+      if (statusFilter === 'timeout') return false; // таймаутов в данных нет
+      return true; // 'all' и 'success' показывают всё
+    });
+
+    countEl.textContent = filtered.length > 0 ? `(${filtered.length})` : '';
+
+    if (filtered.length === 0) {
+      body.innerHTML = '<div class="ml-empty">Нет логов по текущим фильтрам</div>';
+      return;
+    }
+
+    let html = '';
+    filtered.slice(0, 50).forEach(log => {
+      const category = log.model_category || '—';
+      const model = log.model || '';
+      const provider = log.provider || '';
+      const promptTokens = log.prompt_tokens || 0;
+      const completionTokens = log.completion_tokens || 0;
+      const cost = log.cost_usd ? '$' + log.cost_usd.toFixed(4) : '';
+      const time = log.ts ? new Date(log.ts).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+      const cacheRate = log.cache_hit_rate != null ? (log.cache_hit_rate * 100).toFixed(0) + '%' : '';
+
+      html += `<div class="ml-log-card">
+        <div class="ml-log-head">
+          <span class="ml-slot">${category}</span>
+          <span class="ml-time">${time}</span>
+        </div>
+        <div class="ml-log-body">
+          <span class="ml-model">${model}</span>
+          <span class="usage">prompt:${promptTokens} · compl:${completionTokens}</span>
+          <span class="ml-provider">${provider}</span>
+          ${cost ? `<span class="ml-cost">${cost}</span>` : ''}
+          ${cacheRate ? `<span class="ml-cache">кэш:${cacheRate}</span>` : ''}
+        </div>
+      </div>`;
+    });
+    body.innerHTML = html;
+  } catch(e) { /* offline — keep last render */ }
+}
+
+/** Показать/скрыть окно логов */
+window.toggleModelLogs = function() {
+  const panel = document.getElementById('model-logs-panel');
+  panel.style.display = panel.style.display === 'none' ? 'flex' : 'flex';
+  // Если панель скрыта — показываем
+  if (panel.style.display === 'flex' || panel.style.display === '') {
+    panel.style.display = 'flex';
+    pollModelLogs();  // сразу подгружаем
+    pollModelLogsStatus();
+  }
+};
+
+/** Глобальный флаг — если true, игнорируем ошибки/таймауты (пользователь нажал «Отменить») */
+window._warningsDismissed = false;
+
+/** Закрыть окно логов и сбросить цвет кнопки на зелёный */
+window.closeModelLogs = function() {
+  const panel = document.getElementById('model-logs-panel');
+  panel.style.display = 'none';
+  const btn = document.getElementById('ml-toggle-btn');
+  btn.className = 'status-green';
+  window._warningsDismissed = false;
+};
+
+/** Отменить предупреждения — игнорировать ошибки до следующего открытия окна */
+window.dismissWarnings = function() {
+  window._warningsDismissed = true;
+  const btn = document.getElementById('ml-toggle-btn');
+  if (btn) btn.className = 'status-green';
+};
+
+/** Опрос статуса ошибок моделей и смена цвета кнопки */
+async function pollModelLogsStatus() {
+  try {
+    const resp = await fetch('/api/gigascope/events/status');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const btn = document.getElementById('ml-toggle-btn');
+    if (!btn) return;
+    if (window._warningsDismissed) {
+      btn.className = 'status-green';
+      return;
+    }
+    if (data.errors > 0) {
+      btn.className = 'status-red';
+    } else if (data.timeouts > 0) {
+      btn.className = 'status-yellow';
+    } else {
+      btn.className = 'status-green';
+    }
+  } catch(e) { /* offline — keep green */ }
+}
+
+window.toggleIncidentDesc = function(idx) {
+  const el = document.getElementById(`ip-desc-${idx}`);
+  if (el) el.classList.toggle('open');
+};
+
+window.toggleNodeIncidentDesc = function(key) {
+  const el = document.getElementById(`nd-inc-desc-${key}`);
+  if (el) el.classList.toggle('open');
+};
 
 async function pollHypotheses() {
   try {
     const resp = await fetch('/api/gigascope/hypotheses');
     if (!resp.ok) return;
     const data = await resp.json();
-    const hyps = data.hypotheses || [];
-    document.getElementById('hp-count').textContent = `(${hyps.length})`;
+    let hyps = _demoHypotheses(data.hypotheses || []);
     const body = document.getElementById('hp-body');
+    const countEl = document.getElementById('hp-count');
+    const headerEl = document.getElementById('hypothesis-panel').querySelector('#hp-header span');
+    // Always rebuild incidents map from window._allIncidents (kept fresh by pollIncidents)
+    if (selectedNodeId && window._allIncidents) {
+      const map = {};
+      window._allIncidents.forEach(i => {
+        const key = i.service || i.service_id || i.service_name;
+        if (!key) return;
+        (map[key] = map[key] || []).push(i.id);
+      });
+      window._incidentsByService = map;
+    }
+    // Filter by selected node, if any
+    if (selectedNodeId && window._incidentsByService) {
+      const nodeData = nodeObjects[selectedNodeId]?.data;
+      const nodeName = nodeData ? (nodeData.id || nodeData.name || nodeData.label) : null;
+      const incidentIds = nodeName ? (window._incidentsByService[nodeName] || []) : [];
+      hyps = hyps.filter(h => Array.isArray(h.related_incidents)
+                            && h.related_incidents.some(rid => incidentIds.includes(rid)));
+      if (headerEl) headerEl.textContent = nodeName ? `ГИПОТЕЗЫ: ${nodeName}` : 'ГИПОТЕЗЫ';
+    } else if (headerEl) {
+      headerEl.textContent = 'ГИПОТЕЗЫ';
+    }
+    countEl.textContent = `(${hyps.length})`;
     if (hyps.length === 0) {
-      body.innerHTML = '<div style="padding:12px;text-align:center;color:#546e7a;font-size:10px;">Гипотезы появятся после анализа инцидентов</div>';
+      const msg = selectedNodeId
+        ? 'Нет гипотез, связанных с этим узлом'
+        : 'Гипотезы появятся после анализа инцидентов';
+      body.innerHTML = `<div style="padding:12px;text-align:center;color:#546e7a;font-size:10px;">${msg}</div>`;
       return;
     }
     let html = '';
@@ -624,7 +1751,7 @@ async function pollEvents() {
     const resp = await fetch('/api/gigascope/events');
     if (!resp.ok) return;
     const data = await resp.json();
-    const events = data.events || [];
+    const events = demoBaseline ? [] : (data.events || []);
     if (events.length > 0) {
       const latest = events[0];
       const ts = latest.timestamp || latest.id;
@@ -655,70 +1782,1269 @@ function addTickerEvent(severity, text) {
   container.scrollLeft = container.scrollWidth;
 }
 
-// === Hypothesis Detail Modal ===
-const modalOverlay = document.createElement('div');
-modalOverlay.id = 'modal-overlay';
-modalOverlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center';
-modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
-const modalBox = document.createElement('div');
-modalBox.id = 'modal-box';
-modalBox.style.cssText = 'background:rgba(12,18,34,0.97);border:1px solid rgba(0,180,255,0.2);border-radius:14px;width:480px;max-width:90vw;max-height:80vh;overflow-y:auto;padding:24px;backdrop-filter:blur(12px);position:relative';
-modalBox.innerHTML = '<div id="modal-close" style="position:absolute;top:12px;right:16px;color:#78909c;font-size:22px;cursor:pointer;line-height:1" onclick="closeModal()">✕</div><div id="modal-content"></div>';
-modalOverlay.appendChild(modalBox);
-document.body.appendChild(modalOverlay);
+// === Draggable Hypothesis Detail Window ===
+const detailWin = document.createElement('div');
+detailWin.id = 'hyp-detail-window';
+detailWin.className = 'hyp-window';
+detailWin.style.top = '80px';
+detailWin.style.left = 'calc(50% - 220px)';
+detailWin.innerHTML = `<div class="hw-header" id="hyp-detail-drag"><span>🔬 Детали гипотезы</span><button class="hw-close" onclick="closeDetailWin()">✕</button></div><div class="hw-body" id="hyp-detail-body"></div><div class="window-resize-handle"></div>`;
+document.body.appendChild(detailWin);
 
-function closeModal() { modalOverlay.style.display = 'none'; }
+// Make detail window draggable
+makeDraggable(detailWin, 'hyp-detail-drag');
+makeResizable(detailWin);
+
+function closeDetailWin() { detailWin.style.display = 'none'; }
+
+function makeDraggable(win, handleId) {
+  const handle = document.getElementById(handleId);
+  if (!handle) return;
+  // Restore saved position by win.id (panel + detail + create windows all benefit)
+  if (win.id) {
+    try {
+      const saved = localStorage.getItem('hp-pos-' + win.id);
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (p && typeof p.left === 'number' && typeof p.top === 'number') {
+          win.style.left = p.left + 'px';
+          win.style.top  = p.top + 'px';
+          win.style.right = 'auto'; // cancel CSS right:14px if present
+        }
+      }
+    } catch(e) {}
+  }
+  let offX = 0, offY = 0, mx = 0, my = 0;
+  handle.addEventListener('mousedown', startDrag);
+  handle.addEventListener('touchstart', startDragTouch, { passive: false });
+
+  function startDrag(e) {
+    e.preventDefault();
+    // Convert any CSS-right anchored initial position to a left-anchored one
+    // so subsequent moves remain stable.
+    if (win.style.right && win.style.right !== 'auto' && (!win.style.left || win.style.left === 'auto')) {
+      const rect = win.getBoundingClientRect();
+      win.style.left = rect.left + 'px';
+      win.style.right = 'auto';
+    }
+    offX = e.clientX - win.offsetLeft;
+    offY = e.clientY - win.offsetTop;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+  }
+  function startDragTouch(e) {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    if (win.style.right && win.style.right !== 'auto' && (!win.style.left || win.style.left === 'auto')) {
+      const rect = win.getBoundingClientRect();
+      win.style.left = rect.left + 'px';
+      win.style.right = 'auto';
+    }
+    offX = e.touches[0].clientX - win.offsetLeft;
+    offY = e.touches[0].clientY - win.offsetTop;
+    document.addEventListener('touchmove', onDragTouch, { passive: false });
+    document.addEventListener('touchend', stopDrag);
+  }
+  function onDrag(e) {
+    win.style.left = Math.max(0, Math.min(window.innerWidth - 100, e.clientX - offX)) + 'px';
+    win.style.top = Math.max(20, Math.min(window.innerHeight - 60, e.clientY - offY)) + 'px';
+  }
+  function onDragTouch(e) {
+    e.preventDefault();
+    win.style.left = Math.max(0, Math.min(window.innerWidth - 100, e.touches[0].clientX - offX)) + 'px';
+    win.style.top = Math.max(20, Math.min(window.innerHeight - 60, e.touches[0].clientY - offY)) + 'px';
+  }
+  function stopDrag() {
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+    document.removeEventListener('touchmove', onDragTouch);
+    document.removeEventListener('touchend', stopDrag);
+    // Persist position
+    if (win.id) {
+      try {
+        localStorage.setItem('hp-pos-' + win.id, JSON.stringify({
+          left: parseFloat(win.style.left) || 0,
+          top:  parseFloat(win.style.top)  || 0
+        }));
+      } catch(e) {}
+    }
+  }
+}
+
+// Generic window resize handler for detail/create windows
+function makeResizable(winEl) {
+  const handle = winEl.querySelector('.window-resize-handle');
+  if (!handle) return;
+  let sX=0,sY=0,sW=0,sH=0;
+  handle.addEventListener('mousedown', startRS);
+  handle.addEventListener('touchstart', startRS, { passive: false });
+  function startRS(e) {
+    e.preventDefault(); e.stopPropagation();
+    sX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+    sY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+    sW = winEl.offsetWidth; sH = winEl.offsetHeight;
+    document.addEventListener('mousemove', onRS);
+    document.addEventListener('mouseup', stopRS);
+    document.addEventListener('touchmove', onRS, { passive: false });
+    document.addEventListener('touchend', stopRS);
+  }
+  function onRS(e) {
+    const cx = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+    const cy = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+    winEl.style.width = Math.max(280, Math.min(window.innerWidth * 0.9, sW + (cx - sX))) + 'px';
+    winEl.style.height = Math.max(160, Math.min(window.innerHeight * 0.85, sH + (cy - sY))) + 'px';
+  }
+  function stopRS() {
+    document.removeEventListener('mousemove', onRS);
+    document.removeEventListener('mouseup', stopRS);
+    document.removeEventListener('touchmove', onRS);
+    document.removeEventListener('touchend', stopRS);
+  }
+}
+
+// Make hypothesis list panel draggable (sibling to detail/create windows)
+const hypPanel = document.getElementById('hypothesis-panel');
+if (hypPanel) makeDraggable(hypPanel, 'hp-header');
+
+// Make incident list panel draggable (same pattern)
+const incPanel = document.getElementById('incident-panel');
+if (incPanel) {
+  makeDraggable(incPanel, 'ip-header');
+
+  // Resize handle for incident panel
+  const incResizeEl = incPanel.querySelector('.window-resize-handle');
+  if (incResizeEl) {
+    let startX = 0, startY = 0, startW = 0, startH = 0;
+    incResizeEl.addEventListener('mousedown', startResizeInc);
+    incResizeEl.addEventListener('touchstart', startResizeInc, { passive: false });
+    function startResizeInc(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      startX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      startY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      startW = incPanel.offsetWidth;
+      startH = incPanel.offsetHeight;
+      document.addEventListener('mousemove', onResizeInc);
+      document.addEventListener('mouseup', stopResizeInc);
+      document.addEventListener('touchmove', onResizeInc, { passive: false });
+      document.addEventListener('touchend', stopResizeInc);
+    }
+    function onResizeInc(e) {
+      const cx = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      const cy = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      const dw = cx - startX;
+      const dh = cy - startY;
+      incPanel.style.width  = Math.max(220, Math.min(window.innerWidth * 0.9, startW + dw)) + 'px';
+      incPanel.style.height = Math.max(120, Math.min(window.innerHeight * 0.85, startH + dh)) + 'px';
+    }
+    function stopResizeInc() {
+      document.removeEventListener('mousemove', onResizeInc);
+      document.removeEventListener('mouseup', stopResizeInc);
+      document.removeEventListener('touchmove', onResizeInc);
+      document.removeEventListener('touchend', stopResizeInc);
+    }
+  }
+}
+
+// Make hypothesis panel resizable
+const hypPanelResize = document.getElementById('hypothesis-panel');
+if (hypPanelResize) {
+  const hypResizeEl = hypPanelResize.querySelector('.window-resize-handle');
+  if (hypResizeEl) {
+    let sX = 0, sY = 0, sW = 0, sH = 0;
+    hypResizeEl.addEventListener('mousedown', startResizeHyp);
+    hypResizeEl.addEventListener('touchstart', startResizeHyp, { passive: false });
+    function startResizeHyp(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      sX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      sY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      sW = hypPanelResize.offsetWidth;
+      sH = hypPanelResize.offsetHeight;
+      document.addEventListener('mousemove', onResizeHyp);
+      document.addEventListener('mouseup', stopResizeHyp);
+      document.addEventListener('touchmove', onResizeHyp, { passive: false });
+      document.addEventListener('touchend', stopResizeHyp);
+    }
+    function onResizeHyp(e) {
+      const cx = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      const cy = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      const dw = cx - sX;
+      const dh = cy - sY;
+      hypPanelResize.style.width  = Math.max(200, Math.min(window.innerWidth * 0.9, sW + dw)) + 'px';
+      hypPanelResize.style.height = Math.max(120, Math.min(window.innerHeight * 0.85, sH + dh)) + 'px';
+    }
+    function stopResizeHyp() {
+      document.removeEventListener('mousemove', onResizeHyp);
+      document.removeEventListener('mouseup', stopResizeHyp);
+      document.removeEventListener('touchmove', onResizeHyp);
+      document.removeEventListener('touchend', stopResizeHyp);
+    }
+  }
+}
+
+// Make model logs panel draggable and resizable
+const mlPanel = document.getElementById('model-logs-panel');
+if (mlPanel) {
+  makeDraggable(mlPanel, 'ml-header');
+
+  // Filter buttons
+  const mlBtns = mlPanel.querySelectorAll('.ml-btn');
+  mlBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      mlBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      pollModelLogs();
+    });
+  });
+
+  // Status filter
+  const statusFilter = document.getElementById('ml-status-filter');
+  if (statusFilter) statusFilter.addEventListener('change', pollModelLogs);
+
+  // Resizer (bottom-right)
+  const resizer = mlPanel.querySelector('.ml-resize-handle');
+  if (resizer) {
+    let startY = 0, startH = 0;
+    resizer.addEventListener('mousedown', startResize);
+    resizer.addEventListener('touchstart', startResize, { passive: false });
+    function startResize(e) {
+      e.preventDefault();
+      startY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      startH = mlPanel.offsetHeight;
+      document.addEventListener('mousemove', onResize);
+      document.addEventListener('mouseup', stopResize);
+      document.addEventListener('touchmove', onResize, { passive: false });
+      document.addEventListener('touchend', stopResize);
+    }
+    function onResize(e) {
+      const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      const dh = y - startY;
+      const newH = Math.max(150, Math.min(600, startH + dh));
+      mlPanel.style.height = newH + 'px';
+    }
+    function stopResize() {
+      document.removeEventListener('mousemove', onResize);
+      document.removeEventListener('mouseup', stopResize);
+      document.removeEventListener('touchmove', onResize);
+      document.removeEventListener('touchend', stopResize);
+    }
+  }
+}
+
+// Make prediction panel draggable
+const predPanel = document.getElementById('prediction-panel');
+if (predPanel) makeDraggable(predPanel, 'pp-header');
+
+// Make recommendation panel draggable
+const recPanel = document.getElementById('rec-panel');
+if (recPanel) makeDraggable(recPanel, 'rp-header');
+
+// Make dashboard card draggable
+const dbCard = document.getElementById('dashboard-card');
+if (dbCard) makeDraggable(dbCard, 'db-header');
+
+// Make signals panel draggable
+const signalsPanel = document.getElementById('signals-panel');
+if (signalsPanel) makeDraggable(signalsPanel, 'sp-header');
+
+// Recommendation card click-to-expand
+document.addEventListener('click', function(ev) {
+  const card = ev.target.closest('.rec-card');
+  if (card) {
+    card.classList.toggle('expanded');
+  }
+});
+
+let currentHypId = null;
+let currentHypData = null;
 
 async function showHypothesisDetail(id) {
   try {
     const resp = await fetch('/api/gigascope/hypotheses/' + id);
     if (!resp.ok) return;
     const d = await resp.json();
-    const confPct = Math.round((d.confidence || 0) * 100);
-    const confClass = confPct >= 60 ? 'hp-conf-high' : confPct >= 30 ? 'hp-conf-mid' : 'hp-conf-low';
-    const statusLabels = { confirmed: '✅ Подтверждена', pending: '🔬 На проверке', rejected: '❌ Отклонена' };
-    const evHtml = (d.evidence || []).map(e =>
-      `<div style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px">
-        <div style="color:#b0bec5">${e.text || '—'}</div>
-        <div style="display:flex;gap:8px;margin-top:2px;font-size:9px;color:#546e7a">
-          <span>Вес: ${e.weight || 0}</span>
-          <span>Источник: ${e.source_type || '—'}</span>
-        </div>
-      </div>`
-    ).join('') || '<div style="color:#546e7a;font-size:10px;padding:6px">Нет подтверждений</div>';
-    const incidentsHtml = (d.related_incidents || []).map(i =>
-      `<div style="display:flex;gap:8px;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.03)">
-        <span style="color:${i.severity === 'critical' ? '#ff1744' : i.severity === 'warning' ? '#ffd600' : '#00e676'}">●</span>
-        <span>${i.incident_id || '—'}</span>
-        <span style="color:#78909c">${i.service || '?'}</span>
-        <span style="color:#546e7a">${i.status || '?'}</span>
-      </div>`
-    ).join('') || '<div style="color:#546e7a;font-size:10px;padding:4px">Нет связанных инцидентов</div>';
-    document.getElementById('modal-content').innerHTML = `
-      <div style="margin-bottom:16px">
-        <div style="font-size:15px;font-weight:700;color:#e0e6f0;margin-bottom:8px">${d.text || 'Без названия'}</div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px">
-          <span>Уверенность: <span class="${confClass}" style="font-weight:700;font-size:13px">${confPct}%</span></span>
-          <span>Статус: ${statusLabels[d.status] || '🔬 На проверке'}</span>
-          <span style="color:#546e7a">Создана: ${d.created_by || '?'}</span>
-        </div>
-        <div style="font-size:10px;color:#546e7a;margin-top:4px">ID: ${d.id}</div>
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Подтверждения</div>
-        ${evHtml}
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Связанные инциденты</div>
-        ${incidentsHtml}
-      </div>
-    `;
-    modalOverlay.style.display = 'flex';
+    currentHypId = id;
+    currentHypData = d;
+    renderHypDetail(d);
+    detailWin.style.display = 'block';
   } catch(e) {}
 }
 
-// Start polling
-setInterval(pollStatus, 15000);
+function renderHypDetail(d) {
+  const confPct = Math.round((d.confidence || 0) * 100);
+  const confClass = confPct >= 60 ? 'hp-conf-high' : confPct >= 30 ? 'hp-conf-mid' : 'hp-conf-low';
+  const statusLabels = { confirmed: '✅ Подтверждена', pending: '🔬 На проверке', rejected: '❌ Отклонена' };
+  const evHtml = (d.evidence || []).map(e =>
+    `<div style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px">
+      <div style="color:#b0bec5">${e.text || '—'}</div>
+      <div style="display:flex;gap:8px;margin-top:2px;font-size:9px;color:#546e7a">
+        <span>Вес: ${e.weight || 0}</span>
+        <span>Источник: ${e.source_type || '—'}</span>
+      </div>
+    </div>`
+  ).join('') || '<div style="color:#546e7a;font-size:10px;padding:6px">Нет подтверждений</div>';
+  const incidentsHtml = (d.related_incidents || []).map(i =>
+    `<div id="inc-row-${i.incident_id}" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.03)">
+      <span style="color:${i.severity === 'critical' ? '#ff1744' : i.severity === 'warning' ? '#ffd600' : '#00e676'}">●</span>
+      <span>${i.incident_id || '—'}</span>
+      <span style="color:#78909c">${i.service || '?'}</span>
+      <span style="color:#546e7a">${i.status || '?'}</span>
+      <button class="inc-unlink-btn" onclick="unlinkIncident('${d.id}','${i.incident_id}')">✕</button>
+    </div>`
+  ).join('') || '<div style="color:#546e7a;font-size:10px;padding:4px">Нет связанных инцидентов</div>';
+
+  // Edit mode fields (hidden by default)
+  const editSection = `
+    <div id="hyp-edit-area" style="display:none;margin-bottom:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid rgba(255,255,255,0.05)">
+      <div style="font-size:10px;font-weight:600;color:#78909c;margin-bottom:6px;text-transform:uppercase">Редактирование</div>
+      <label style="font-size:10px;color:#90a4ae">Текст гипотезы</label>
+      <textarea class="edit-field" id="edit-hyp-text" rows="3">${d.text || ''}</textarea>
+      <div class="edit-conf-row">
+        <label style="font-size:10px;color:#90a4ae;white-space:nowrap">Уверенность:</label>
+        <input type="range" id="edit-hyp-conf" min="5" max="95" value="${confPct}" oninput="document.getElementById('edit-conf-display').textContent=this.value+'%'">
+        <span class="edit-conf-val" id="edit-conf-display">${confPct}%</span>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="detail-btn" onclick="saveHypEdit()">💾 Сохранить</button>
+        <button class="detail-btn-danger" onclick="cancelHypEdit()">Отмена</button>
+      </div>
+    </div>`;
+
+  const bodyHtml = `
+    <div style="margin-bottom:10px">
+      <div id="hyp-detail-text" style="font-size:14px;font-weight:700;color:#e0e6f0;margin-bottom:8px;line-height:1.4">${d.text || 'Без названия'}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px">
+        <span>Уверенность: <span class="${confClass}" style="font-weight:700;font-size:13px">${confPct}%</span></span>
+        <span>Статус: ${statusLabels[d.status] || '🔬 На проверке'}</span>
+        <span style="color:#546e7a">Создана: ${d.created_by || '?'}</span>
+      </div>
+      <div style="font-size:10px;color:#546e7a;margin-top:4px">ID: ${d.id}</div>
+    </div>
+    ${editSection}
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Подтверждения</div>
+      ${evHtml}
+    </div>
+    <div style="margin-bottom:10px;padding:8px;background:rgba(0,0,0,0.15);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:9px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase">📈 Confidence Timeline</div>
+      <svg id="conf-timeline-svg" width="100%" height="60" viewBox="0 0 260 60" style="display:block;overflow:visible">
+        <rect x="0" y="0" width="260" height="60" fill="transparent"/>
+        <!-- Confidence bg line -->
+        <line x1="10" y1="50" x2="250" y2="50" stroke="#263238" stroke-width="1"/>
+        <!-- Confidence fill and dots -->
+        <path id="conf-timeline-path" d="" fill="none" stroke="#00b4ff" stroke-width="1.5" stroke-linecap="round"/>
+        <circle id="conf-timeline-dot" r="3" fill="#00b4ff"/>
+        <!-- Labels -->
+        <text x="10" y="58" fill="#546e7a" font-size="6">0</text>
+        <text x="245" y="58" fill="#546e7a" font-size="6" text-anchor="end">ev</text>
+        <text x="130" y="58" fill="#546e7a" font-size="6" text-anchor="middle">time</text>
+      </svg>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:600;color:#78909c;letter-spacing:0.5px;margin-bottom:4px;text-transform:uppercase">Связанные инциденты</div>
+      <div id="hyp-incidents-list">${incidentsHtml}</div>
+      <div id="inc-link-area" style="display:none;margin-top:6px">
+        <select class="inc-link-select" id="inc-link-select"></select>
+        <button class="detail-btn-success" onclick="linkIncident()" style="width:100%">+ Привязать</button>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="detail-btn" onclick="enableHypEdit()">✏️ Редактировать</button>
+      <button class="detail-btn" onclick="showLinkIncidents('${d.id}')">🔗 Привязать инцидент</button>
+      <button class="detail-btn" onclick="showCascadeForHyp('${d.id}')" style="border-color:rgba(255,23,68,0.3);color:#ff8a80">⚡ Показать каскад</button>
+      <button class="detail-btn" onclick="analyzeHypothesis('${d.id}')" style="border-color:rgba(0,200,255,0.3);color:#80d8ff">📝 Анализ</button>
+      <button class="detail-btn-danger" onclick="deleteHypothesis('${d.id}')">🗑️ Удалить</button>
+    </div>
+    <div id="hyp-analysis-area" style="margin-top:8px;display:none"></div>`;
+
+  document.getElementById('hyp-detail-body').innerHTML = bodyHtml;
+
+  // Draw confidence timeline
+  (function drawTimeline() {
+    const svg = document.getElementById('conf-timeline-svg');
+    if (!svg) return;
+    const path = document.getElementById('conf-timeline-path');
+    const dot = document.getElementById('conf-timeline-dot');
+    if (!path || !dot) return;
+
+    const evidence = d.evidence || [];
+    const points = [{ x: 10, y: 50 }]; // start at 0 confidence
+    let curConf = 0.1; // base
+    const maxX = 250;
+    const minY = 8; // top = high confidence
+    const maxY = 50; // bottom = low
+
+    evidence.forEach((ev, idx) => {
+      const w = typeof ev.weight === 'number' ? ev.weight : 0.1;
+      curConf = Math.min(curConf + w * 0.4, 0.95);
+      const x = 10 + ((idx + 1) / Math.max(evidence.length, 1)) * (maxX - 10);
+      const y = maxY - (curConf / 0.95) * (maxY - minY);
+      points.push({ x, y });
+    });
+
+    // Final point at current confidence
+    const finalX = maxX;
+    const finalY = maxY - (d.confidence || 0.5) / 0.95 * (maxY - minY);
+    points.push({ x: finalX, y: finalY });
+
+    const dAttr = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+    path.setAttribute('d', dAttr);
+    dot.setAttribute('cx', finalX.toFixed(1));
+    dot.setAttribute('cy', finalY.toFixed(1));
+  })();
+}
+
+function enableHypEdit() {
+  document.getElementById('hyp-edit-area').style.display = 'block';
+}
+
+function cancelHypEdit() {
+  if (currentHypData) renderHypDetail(currentHypData);
+}
+
+async function saveHypEdit() {
+  if (!currentHypId) return;
+  const newText = document.getElementById('edit-hyp-text').value.trim();
+  const newConf = parseInt(document.getElementById('edit-hyp-conf').value) / 100;
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses/' + currentHypId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newText, confidence: newConf })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const updated = await resp.json();
+    currentHypData = updated;
+    renderHypDetail(updated);
+    pollHypotheses();
+  } catch(e) {
+    alert('Ошибка сохранения: ' + e.message);
+  }
+}
+
+async function deleteHypothesis(id) {
+  if (!confirm('Вы уверены, что хотите удалить эту гипотезу? Это действие необратимо.')) return;
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses/' + id, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    closeDetailWin();
+    pollHypotheses();
+  } catch(e) {
+    alert('Ошибка удаления: ' + e.message);
+  }
+}
+
+async function unlinkIncident(hypId, incId) {
+  if (!confirm('Отвязать инцидент ' + incId + ' от гипотезы?')) return;
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses/' + hypId + '/incidents/' + incId, {
+      method: 'DELETE'
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const row = document.getElementById('inc-row-' + incId);
+    if (row) row.remove();
+    // Check if list is now empty
+    const list = document.getElementById('hyp-incidents-list');
+    if (list && list.children.length === 0) {
+      list.innerHTML = '<div style="color:#546e7a;font-size:10px;padding:4px">Нет связанных инцидентов</div>';
+    }
+  } catch(e) {
+    alert('Ошибка отвязки: ' + e.message);
+  }
+}
+
+function showLinkIncidents(hypId) {
+  const area = document.getElementById('inc-link-area');
+  if (area.style.display === 'block') { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+  const sel = document.getElementById('inc-link-select');
+  sel.innerHTML = '<option value="">Загрузка...</option>';
+  fetch('/api/gigascope/incidents').then(r => r.json()).then(data => {
+    const incidents = data.incidents || [];
+    const related = (currentHypData?.related_incidents || []).map(i => i.incident_id);
+    const available = incidents.filter(i => !related.includes(i.id));
+    if (available.length === 0) {
+      sel.innerHTML = '<option value="">Нет доступных инцидентов</option>';
+    } else {
+      sel.innerHTML = available.slice(0, 20).map(i =>
+        `<option value="${i.id}">${i.id} — ${i.service_name || '?'} (${i.status})</option>`
+      ).join('');
+    }
+  }).catch(() => {
+    sel.innerHTML = '<option value="">Ошибка загрузки</option>';
+  });
+}
+
+async function linkIncident() {
+  if (!currentHypId) return;
+  const sel = document.getElementById('inc-link-select');
+  const incId = sel.value;
+  if (!incId) { alert('Выберите инцидент'); return; }
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses/' + currentHypId + '/incidents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ incident_id: incId })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    // Refresh detail
+    const r2 = await fetch('/api/gigascope/hypotheses/' + currentHypId);
+    if (r2.ok) {
+      const updated = await r2.json();
+      currentHypData = updated;
+      renderHypDetail(updated);
+    }
+    pollHypotheses();
+  } catch(e) {
+    alert('Ошибка привязки: ' + e.message);
+  }
+}
+
+// === Create Hypothesis Dialog ===
+const createWin = document.createElement('div');
+createWin.id = 'hyp-create-window';
+createWin.className = 'hyp-window';
+createWin.style.top = '120px';
+createWin.style.left = 'calc(50% - 180px)';
+createWin.innerHTML = `
+  <div class="hw-header" id="hyp-create-drag">✏️ Новая гипотеза</div>
+  <div class="hw-body">
+    <label>Текст гипотезы</label>
+    <textarea id="new-hyp-text" placeholder="Например: PaymentService падает по пятницам из-за перегрузки connection pool..."></textarea>
+    <label>Уверенность: <span class="conf-val" id="new-hyp-conf-val">50</span>%</label>
+    <input type="range" id="new-hyp-conf" min="5" max="95" value="50" oninput="document.getElementById('new-hyp-conf-val').textContent=this.value">
+    <label>Связать с инцидентами</label>
+    <div id="new-hyp-incidents-wrapper" style="max-height:100px;overflow-y:auto"></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeCreateWin()">Отмена</button>
+      <button class="btn-create" onclick="createHypothesis()">Создать</button>
+    </div>
+  </div>
+  <div class="window-resize-handle"></div>`;
+document.body.appendChild(createWin);
+makeDraggable(createWin, 'hyp-create-drag');
+makeResizable(createWin);
+
+function closeCreateWin() { createWin.style.display = 'none'; }
+
+function showCreateDialog() {
+  // Fetch incidents for selection
+  fetch('/api/gigascope/incidents').then(r => r.json()).then(data => {
+    const incidents = data.incidents || [];
+    const wrap = document.getElementById('new-hyp-incidents-wrapper');
+    if (incidents.length === 0) {
+      wrap.innerHTML = '<div style="color:#546e7a;font-size:10px;padding:4px 0">Нет инцидентов</div>';
+    } else {
+      wrap.innerHTML = incidents.slice(0, 10).map(i =>
+        `<label style="font-size:10px;padding:2px 0;gap:4px;display:flex;align-items:center">
+          <input type="checkbox" value="${i.id}" class="inc-checkbox">
+          <span style="color:${i.severity === 'critical' ? '#ff1744' : i.severity === 'warning' ? '#ffd600' : '#00e676'}">●</span>
+          ${i.id} — ${i.service_name || '?'} (${i.status})
+        </label>`
+      ).join('');
+    }
+  }).catch(() => {});
+  createWin.style.display = 'block';
+  document.getElementById('new-hyp-text').value = '';
+  document.getElementById('new-hyp-conf').value = 50;
+  document.getElementById('new-hyp-conf-val').textContent = '50';
+}
+
+async function createHypothesis() {
+  const text = document.getElementById('new-hyp-text').value.trim();
+  if (!text) { alert('Введите текст гипотезы'); return; }
+  const confidence = parseInt(document.getElementById('new-hyp-conf').value) / 100;
+  const checked = document.querySelectorAll('.inc-checkbox:checked');
+  const relatedIncidents = Array.from(checked).map(cb => cb.value);
+
+  try {
+    const resp = await fetch('/api/gigascope/hypotheses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, confidence, created_by: 'human', related_incidents: relatedIncidents })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    closeCreateWin();
+    setTimeout(pollHypotheses, 500);
+  } catch(e) {
+    alert('Ошибка создания: ' + e.message);
+  }
+}
+
+// ⟳ Restart GigaScope SPA
+async function restartGigaScope() {
+  const btn = document.getElementById('restart-btn');
+  btn.disabled = true;
+  btn.textContent = '⟳ ...';
+  btn.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/gigascope/restart', { method: 'POST' });
+    const data = await resp.json();
+    if (data.status === 'restarting') {
+      btn.textContent = '✓ Перезапущен';
+      btn.style.background = 'rgba(0,230,118,0.15)';
+      btn.style.borderColor = 'rgba(0,230,118,0.3)';
+      btn.style.color = '#00e676';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = '⟳ Перезапуск';
+        btn.style.opacity = '1';
+        btn.style.background = 'rgba(255,23,68,0.15)';
+        btn.style.borderColor = 'rgba(255,23,68,0.3)';
+        btn.style.color = '#ff8a80';
+      }, 3000);
+    } else {
+      btn.textContent = '✗ Ошибка';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = '⟳ Перезапуск';
+        btn.style.opacity = '1';
+      }, 3000);
+    }
+  } catch(e) {
+    btn.textContent = '✗ Ошибка';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '⟳ Перезапуск';
+      btn.style.opacity = '1';
+    }, 3000);
+  }
+}
+
+// === Dashboard Engine Status ===
+let engineStatusData = null;
+let engineScanData = null;
+let engineCascadeData = null;
+
+async function pollEngineStatus() {
+  try {
+    const [statusResp, scanResp, cascadeResp] = await Promise.all([
+      fetch('/api/gigascope/engine/status'),
+      fetch('/api/gigascope/engine/scan', { method: 'POST' }),
+      fetch('/api/gigascope/engine/cascades', { method: 'POST' })
+    ]);
+    if (statusResp.ok) engineStatusData = await statusResp.json();
+    if (scanResp.ok) engineScanData = await scanResp.json();
+    if (cascadeResp.ok) engineCascadeData = await cascadeResp.json();
+    renderDashboard();
+  } catch(e) { /* offline — keep showing last known data */ }
+}
+
+function renderDashboard() {
+  const card = document.getElementById('dashboard-card');
+  if (!card) return;
+  card.style.display = 'block';
+
+  if (demoBaseline) {
+    // Green baseline: zero out dashboard counters
+    document.getElementById('dc-incidents').textContent = '0';
+    document.getElementById('dc-hypotheses').textContent = '0';
+    document.getElementById('dc-auto-hyps').textContent = '0';
+    document.getElementById('dc-open-incidents').textContent = '0';
+    document.getElementById('dc-confidence').textContent = '—';
+    document.getElementById('dc-patterns').textContent = '0';
+    document.getElementById('dc-cascades').textContent = '0';
+    document.getElementById('dc-cascade-count').textContent = '0';
+  }
+
+  if (engineStatusData && !demoBaseline) {
+    const d = engineStatusData;
+    const allHyps = d.hypotheses || [];
+    const visibleHypotheses = demoStage < 3 ? 0 : demoStage === 3 ? Math.min(3, allHyps.length) : allHyps.length;
+    const visibleIncidents = demoStage < 2 ? 0 : demoStage === 2 ? 5 : demoStage === 3 ? 13 : (d.total_incidents || 0);
+    document.getElementById('dc-incidents').textContent = visibleIncidents;
+    document.getElementById('dc-hypotheses').textContent = visibleHypotheses;
+    document.getElementById('dc-auto-hyps').textContent = demoStage >= 4 ? (d.auto_generated || 0) : 0;
+    document.getElementById('dc-open-incidents').textContent = demoStage >= 4 ? (d.open_incidents || 0) : visibleIncidents;
+
+    // Average confidence appears together with the complete hypothesis set.
+    if (demoStage >= 4 && allHyps.length > 0) {
+      const avgConf = Math.round(allHyps.reduce((s, h) => s + (h.confidence || 0), 0) / allHyps.length * 100);
+      const el = document.getElementById('dc-confidence');
+      el.textContent = avgConf + '%';
+      el.className = 'dc-value ' + (avgConf >= 60 ? 'high' : avgConf >= 30 ? 'mid' : 'low');
+    } else {
+      document.getElementById('dc-confidence').textContent = '—';
+    }
+  }
+
+  if (engineScanData && !demoBaseline) {
+    const s = engineScanData;
+    const patterns = (s.temporal_patterns || []).length + (s.severity_clusters || []).length;
+    document.getElementById('dc-patterns').textContent = patterns;
+  }
+
+  if (engineCascadeData && !demoBaseline) {
+    const c = engineCascadeData;
+    // Предпочитаем cascade_paths (полные пути) плоским cascades
+    const cascadeCount = (c.cascade_paths || c.cascades || []).length;
+    document.getElementById('dc-cascades').textContent = cascadeCount;
+    document.getElementById('dc-cascade-count').textContent = cascadeCount;
+  }
+}
+
+async function refreshEngine() {
+  const btn = document.querySelector('.dc-btn:not(.demo)');
+  if (btn) { btn.textContent = '⟳ ...'; btn.style.opacity = '0.5'; }
+  await pollEngineStatus();
+  if (btn) { btn.textContent = '⟳ Обновить'; btn.style.opacity = '1'; }
+}
+
+// === Predictions & Recommendations ===
+let predictionData = null;
+let recommendationData = null;
+
+async function refreshPredictions() {
+  const ppBody = document.getElementById('pp-body');
+  const rpBody = document.getElementById('rp-body');
+  if (!ppBody || !rpBody) return;
+
+  try {
+    const [predResp, recResp] = await Promise.all([
+      fetch('/api/gigascope/predictions'),
+      fetch('/api/gigascope/recommendations')
+    ]);
+
+    if (predResp.ok) {
+      predictionData = await predResp.json();
+      if (!demoBaseline) renderPredictions();
+    }
+    if (recResp.ok) {
+      recommendationData = await recResp.json();
+      if (!demoBaseline) renderRecommendations();
+    }
+
+    // Update risk button color
+    const riskBtn = document.getElementById('risk-btn');
+    if (riskBtn && predictionData && predictionData.top_risks) {
+      const hasHigh = predictionData.top_risks.some(r => r.risk_score > 0.6);
+      if (hasHigh) {
+        riskBtn.style.background = 'rgba(255,23,68,0.15)';
+        riskBtn.style.borderColor = 'rgba(255,23,68,0.3)';
+        riskBtn.style.color = '#ff8a80';
+      } else {
+        riskBtn.style.background = 'rgba(255,152,0,0.12)';
+        riskBtn.style.borderColor = 'rgba(255,152,0,0.25)';
+        riskBtn.style.color = '#ffb74d';
+      }
+    }
+  } catch(e) { /* ignore */ }
+}
+
+function renderPredictions() {
+  const body = document.getElementById('pp-body');
+  if (!body || !predictionData) return;
+
+  const services = predictionData.services || [];
+  if (services.length === 0) {
+    body.innerHTML = '<div style="padding:10px;text-align:center;color:#546e7a;font-size:10px;">Нет данных</div>';
+    return;
+  }
+
+  let html = '';
+  services.forEach(s => {
+    const risk = s.risk_score || 0;
+    const failProb = s.failure_probability_4h || 0;
+    const riskClass = risk < 0.3 ? 'green' : risk < 0.6 ? 'yellow' : 'red';
+    const barPct = Math.min(100, Math.round(risk * 100));
+    const patternHint = s.top_pattern ? `<span class="pp-pattern">${s.top_pattern}</span>` : '';
+    const stored = feedbackStore[s.name];
+    const fbIcon = stored ? stored.icon : '';
+    const fbLabel = stored ? stored.label : '';
+    const fbColor = stored ? stored.color : '';
+    const fbDisable = stored ? 'pointer-events:none;opacity:0.35;filter:grayscale(1)' : '';
+    html += `<div class="pp-service" data-service="${s.name}">
+      <div class="pp-row">
+        <span class="pp-name">${s.name}</span>
+        <span class="pp-score ${riskClass}">${(risk * 100).toFixed(0)}%</span>
+      </div>
+      <div class="pp-bar"><div class="pp-bar-fill ${riskClass}" style="width:${barPct}%"></div></div>
+      <div class="pp-fail-prob">Вероятность отказа за 4ч: ${(failProb * 100).toFixed(1)}%</div>
+      <div class="pp-feedback-row">
+        <button class="pp-btn-fb" onclick="sendFeedback('${s.name}','confirm')" title="Подтвердить" style="${fbDisable}">👍</button>
+        <button class="pp-btn-fb pp-btn-fb-reject" onclick="sendFeedback('${s.name}','reject')" title="Отклонить" style="${fbDisable}">👎</button>
+        <span class="pp-fb-status" id="fb-${s.name.replace(/\s+/g,'_')}">${fbIcon ? fbIcon + ' <span style="color:' + fbColor + ';font-size:10px">' + fbLabel + '</span>' : ''}</span>
+      </div>
+      ${patternHint}
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+function renderRecommendations() {
+  const body = document.getElementById('rp-body');
+  if (!body || !recommendationData) return;
+
+  const recs = Array.isArray(recommendationData) ? recommendationData : (recommendationData.recommendations || []);
+  if (recs.length === 0) {
+    body.innerHTML = '<div style="padding:10px;text-align:center;color:#546e7a;font-size:10px;">Нет рекомендаций</div>';
+    return;
+  }
+
+  let html = '';
+  recs.forEach(r => {
+    const prio = r.priority || 'low';
+    const type = r.type || 'monitoring';
+    html += `<div class="rec-card">
+      <span class="rec-priority ${prio}">${prio}</span>
+      <span class="rec-type">${type}</span>
+      <div class="rec-title">${r.title}</div>
+      <div class="rec-reasoning">${r.reasoning || ''}</div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+// Хранилище отправленных фидбеков — переживает refresh
+let feedbackStore = {};
+
+async function sendFeedback(serviceName, action) {
+  try {
+    const fb = action === 'confirm' ? 'up' : 'down';
+    const resp = await fetch('/api/gigascope/predictions/feedback', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        service: serviceName,
+        feedback: fb,
+        recommendation_index: 0
+      })
+    });
+    const safeName = serviceName.replace(/\s+/g,'_');
+    const fbSpan = document.getElementById('fb-' + safeName);
+    if (resp.ok) {
+      const icon = action === 'confirm' ? '✅' : '❌';
+      const label = action === 'confirm' ? 'Подтверждено' : 'Отклонено';
+      const color = action === 'confirm' ? '#4caf50' : '#ff8a80';
+      fbSpan.innerHTML = `${icon} <span style="color:${color};font-size:10px">${label}</span>`;
+      // Сохраняем в store чтобы renderPredictions не потерял статус
+      feedbackStore[serviceName] = { action: fb, label: label, icon: icon, color: color };
+      // Блокируем кнопки ТОЛЬКО у этого сервиса, а не все
+      const ppService = fbSpan.closest('.pp-service');
+      if (ppService) {
+        const btns = ppService.querySelectorAll('.pp-btn-fb');
+        btns.forEach(b => { b.style.pointerEvents = 'none'; b.style.opacity = '0.35'; b.style.filter = 'grayscale(1)'; });
+      }
+    } else {
+      const errData = await resp.json().catch(() => ({}));
+      fbSpan.textContent = '❌ ' + (errData.error || 'ошибка сервера');
+      fbSpan.style.color = '#ef5350';
+      fbSpan.style.fontSize = '9px';
+    }
+  } catch(e) {
+    const fbSpan = document.getElementById('fb-' + serviceName.replace(/\s+/g,'_'));
+    if (fbSpan) { fbSpan.textContent = '❌ сеть'; fbSpan.style.color = '#ef5350'; }
+  }
+}
+
+function togglePredictions() {
+  const pp = document.getElementById('prediction-panel');
+  const rp = document.getElementById('rec-panel');
+  if (!pp || !rp) return;
+
+  const isVisible = pp.style.display === 'flex';
+  if (isVisible) {
+    pp.style.display = 'none';
+    rp.style.display = 'none';
+  } else {
+    pp.style.display = 'flex';
+    rp.style.display = 'flex';
+    refreshPredictions();
+  }
+}
+
+// === User Signals ===
+let _signalTab = 'signals';
+let _signalStore = { signals: [], queries: [] };
+
+function toggleSignals() {
+  const sp = document.getElementById('signals-panel');
+  if (!sp) return;
+  const isVisible = sp.style.display === 'flex';
+  if (isVisible) {
+    sp.style.display = 'none';
+  } else {
+    sp.style.display = 'flex';
+    refreshSignals();
+  }
+}
+
+function switchSignalTab(tab) {
+  _signalTab = tab;
+  document.getElementById('sp-badge-signals').style.background = tab === 'signals' ? 'rgba(156,39,176,0.2)' : 'rgba(255,255,255,0.05)';
+  document.getElementById('sp-badge-queries').style.background = tab === 'queries' ? 'rgba(156,39,176,0.2)' : 'rgba(255,255,255,0.05)';
+  renderSignalBody();
+}
+
+async function refreshSignals() {
+  try {
+    const [sigResp, qResp] = await Promise.all([
+      fetch('/api/gigascope/user-requests'),
+      fetch('/api/gigascope/user-queries')
+    ]);
+    if (sigResp.ok) _signalStore.signals = demoBaseline ? [] : ((await sigResp.json()).requests || []);
+    if (qResp.ok) _signalStore.queries = demoBaseline ? [] : ((await qResp.json()).queries || []);
+  } catch(e) {}
+  renderSignalBody();
+}
+
+function renderSignalBody() {
+  const body = document.getElementById('sp-body');
+  if (!body) return;
+
+  if (_signalTab === 'signals') {
+    renderSignalsForm();
+    renderSignalsList();
+  } else {
+    renderQueriesList();
+  }
+}
+
+function renderSignalsForm() {
+  const body = document.getElementById('sp-body');
+  if (!body) return;
+  // Get services from graph
+  const services = (graphData && graphData.nodes) ? graphData.nodes.map(n => n.name) : ['PaymentService','TransactionService','AccountService','Database','AuthService','APIGateway','Kafka','CacheCluster'];
+  const svcOpts = services.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  body.innerHTML = `<div class="sp-form-row">
+    <label>Сервис (КЭ)</label>
+    <select id="sp-svc">${svcOpts}</select>
+  </div>
+  <div class="sp-form-row">
+    <label>Тип</label>
+    <select id="sp-type">
+      <option value="incident">Инцидент</option>
+      <option value="service_request">Запрос на обслуживание</option>
+    </select>
+  </div>
+  <div class="sp-form-row">
+    <label>Важность</label>
+    <select id="sp-severity">
+      <option value="info">Info</option>
+      <option value="warning">Warning</option>
+      <option value="critical" selected>Critical</option>
+    </select>
+  </div>
+  <div class="sp-form-row">
+    <label>Источник</label>
+    <select id="sp-source">
+      <option value="user">Пользователь</option>
+      <option value="monitoring">Мониторинг</option>
+    </select>
+  </div>
+  <div class="sp-form-row">
+    <label>Описание</label>
+    <textarea id="sp-desc" rows="3" placeholder="Опишите проблему..."></textarea>
+  </div>
+  <button class="sp-submit-btn" onclick="submitSignal()">📩 Отправить сигнал</button>
+  <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);padding-top:6px">
+    <div style="font-size:9px;color:#78909c;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">Активные сигналы (${_signalStore.signals.filter(s => s.status !== 'resolved').length})</div>
+  </div>
+  <div id="sp-signals-list"></div>`;
+  renderSignalsList();
+}
+
+function renderSignalsList() {
+  const list = document.getElementById('sp-signals-list');
+  if (!list) return;
+  const active = _signalStore.signals.filter(s => s.status !== 'resolved');
+  if (active.length === 0) {
+    list.innerHTML = '<div style="color:#546e7a;font-size:9px;padding:4px 0;text-align:center">Нет активных сигналов</div>';
+    return;
+  }
+  list.innerHTML = active.map(s => {
+    const sev = s.severity || 'info';
+    return `<div class="signal-card">
+      <div class="sc-header">
+        <span class="sc-service">${s.service}</span>
+        <span class="sc-severity ${sev}">${sev}</span>
+      </div>
+      <div class="sc-desc">${s.description || ''}</div>
+      <div class="sc-status">${s.source || 'user'} · ${s.created_at || ''} · ${s.status || 'pending'}</div>
+      <div class="sc-actions">
+        <button onclick="resolveSignal('${s.id}')">✓ Решено</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderQueriesList() {
+  const body = document.getElementById('sp-body');
+  if (!body) return;
+  const qs = _signalStore.queries || [];
+  if (qs.length === 0) {
+    body.innerHTML = '<div style="color:#546e7a;font-size:10px;padding:20px;text-align:center">Нет вопросов от GigaScope</div>';
+    return;
+  }
+  body.innerHTML = qs.map(q => {
+    const answered = q.status === 'answered';
+    return `<div class="signal-card" style="${answered ? 'opacity:0.5' : ''}">
+      <div class="sc-header">
+        <span class="sc-service">${q.service || ''}</span>
+        <span class="sc-severity info" style="font-size:8px">${answered ? '✓ ответ получен' : '⏳ ожидает'}</span>
+      </div>
+      <div class="sc-desc">${q.question || ''}</div>
+      ${answered ? `<div class="sc-status">Ответ: ${q.answer || ''}</div>` :
+        `<div class="sc-actions">
+          <button onclick="answerQuery('${q.id}','confirmed')">✅ Подтверждаю</button>
+          <button onclick="answerQuery('${q.id}','rejected')">❌ Не решено</button>
+          <button onclick="answerQuery('${q.id}','in_progress')">⏳ В работе</button>
+        </div>`}
+    </div>`;
+  }).join('');
+}
+
+async function submitSignal() {
+  const service = document.getElementById('sp-svc').value;
+  const type = document.getElementById('sp-type').value;
+  const severity = document.getElementById('sp-severity').value;
+  const source = document.getElementById('sp-source').value;
+  const description = document.getElementById('sp-desc').value.trim();
+  if (!description) { alert('Опишите проблему'); return; }
+
+  try {
+    const resp = await fetch('/api/gigascope/user-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service, description, source, severity, request_type: type })
+    });
+    if (resp.ok) {
+      document.getElementById('sp-desc').value = '';
+      refreshSignals();
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      alert('Ошибка: ' + (err.error || 'HTTP ' + resp.status));
+    }
+  } catch(e) {
+    alert('Ошибка сети: ' + e.message);
+  }
+}
+
+async function resolveSignal(id) {
+  try {
+    const resp = await fetch('/api/gigascope/user-requests/' + id + '/resolve', { method: 'POST' });
+    if (resp.ok) refreshSignals();
+  } catch(e) {}
+}
+
+async function answerQuery(id, answer) {
+  try {
+    const resp = await fetch('/api/gigascope/user-queries/' + id + '/answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answer })
+    });
+    if (resp.ok) refreshSignals();
+  } catch(e) {}
+}
+
+function pollSignals() {
+  if (document.getElementById('signals-panel') && document.getElementById('signals-panel').style.display === 'flex') {
+    refreshSignals();
+  }
+}
+
+// === Live Demo Mode ===
+const DEMO_DURATION_MS = 90000;
+let demoRunning = false;
+let demoBaseline = true;
+let demoStage = -1;
+
+// Production always runs at real time. Tests may set this before clicking to
+// verify the complete sequence without changing the 90-second contract.
+function _demoSpeed() {
+  const speed = Number(window.__GIGASCOPE_DEMO_SPEED__ || 1);
+  return Number.isFinite(speed) && speed > 0 ? speed : 1;
+}
+
+function _demoNodeStatus(node) {
+  if (demoBaseline || demoStage < 1) return 'healthy';
+  const liveStatus = node._live_status || node.status || 'unknown';
+  const id = node.id || node.name || '';
+  const revealed = demoStage === 1
+    ? new Set(['PG-Node1', 'Database'])
+    : demoStage === 2
+      ? new Set(['PG-Node1', 'PG-Node2', 'PG-Coordinator', 'Database'])
+      : demoStage < 6
+        ? new Set(['PG-Node1', 'PG-Node2', 'PG-Coordinator', 'Database',
+                   'PaymentService', 'VM-Payment', 'AccountService', 'VM-Account',
+                   'TransactionService', 'VM-Transaction', 'CRMGateway', 'VM-CRM'])
+        : null;
+  return !revealed || revealed.has(id) ? liveStatus : 'healthy';
+}
+
+// Canonical stage-aware projection for every node consumer. Renderer colors,
+// counters, sidebar details and hover tooltips must never mix baseline state
+// with raw API metadata from a later demo stage.
+function _demoNodeView(node) {
+  const id = node.id || node.name || '';
+  const visibleIncidents = Array.isArray(window._allIncidents)
+    ? window._allIncidents.filter(i => {
+        const service = i.service || i.service_name || i.service_id;
+        return service && service === id && (i.status === 'open' || i.status === 'active');
+      }).length
+    : (demoBaseline || demoStage < 2 ? 0 : Number(node._live_open_incidents ?? node.open_incidents ?? 0));
+  return {
+    ...node,
+    status: _demoNodeStatus(node),
+    open_incidents: visibleIncidents
+  };
+}
+
+function _demoIncidents(incidents) {
+  if (demoBaseline || demoStage < 2) return [];
+  if (demoStage === 2) {
+    return incidents.filter(i => (i.service || i.service_name || i.service_id) === 'Database');
+  }
+  // The first cascade stage intentionally exposes the 13 seeded incidents;
+  // the five engine-derived incidents join them with the full hypothesis set.
+  if (demoStage === 3) return incidents.slice(0, 13);
+  return incidents;
+}
+
+function _demoHypotheses(hypotheses) {
+  if (demoBaseline || demoStage < 3) return [];
+  return demoStage === 3 ? hypotheses.slice(0, 3) : hypotheses;
+}
+
+async function _demoRead(path) {
+  const resp = await fetch(path, { cache: 'no-store' });
+  if (!resp.ok) throw new Error(path + ' вернул HTTP ' + resp.status);
+  return resp.json();
+}
+
+async function _demoRender(stage) {
+  demoStage = stage;
+  await Promise.all([pollStatus(), pollEngineStatus(), pollHypotheses(), pollIncidents()]);
+}
+
+async function runDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+  const btn = document.getElementById('dc-demo-btn');
+  const expectedHypotheses = 9;
+  const expectedIncidents = 18;
+  let countdownTimer = null;
+  // Приостановить фоновые опросчики на время демо
+  _pollTimers.forEach(id => clearInterval(id));
+  _pollTimers.length = 0;
+
+  try {
+    btn.disabled = true;
+    btn.textContent = '⏳ Проверка...';
+    addTickerEvent('info', '🔎 Проверяю живые API и каноническое состояние...');
+
+    const [status, graph, incidents, hypotheses] = await Promise.all([
+      _demoRead('/api/gigascope/engine/status'),
+      _demoRead('/api/gigascope/graph'),
+      _demoRead('/api/gigascope/incidents'),
+      _demoRead('/api/gigascope/hypotheses'),
+    ]);
+    if (Number(status.total_hypotheses) !== expectedHypotheses ||
+        Number(status.total_incidents) !== expectedIncidents ||
+        (incidents.incidents || []).length !== expectedIncidents ||
+        (hypotheses.hypotheses || []).length !== expectedHypotheses) {
+      throw new Error('ожидается 9 гипотез и 18 инцидентов; выполните reset_demo.sh');
+    }
+    if ((graph.nodes || []).length !== 16 || (graph.edges || []).length !== 20) {
+      throw new Error('ожидается граф 16 узлов / 20 связей');
+    }
+
+    // Start the clock only after preflight, so the visible story is exactly 90s.
+    const speed = _demoSpeed();
+    const startedAt = performance.now();
+    const elapsedDemoMs = () => (performance.now() - startedAt) * speed;
+    const waitUntil = async (offsetMs) => {
+      const left = Math.max(0, (offsetMs - elapsedDemoMs()) / speed);
+      if (left) await new Promise(resolve => setTimeout(resolve, left));
+    };
+    countdownTimer = setInterval(() => {
+      const left = Math.max(0, Math.ceil((DEMO_DURATION_MS - elapsedDemoMs()) / 1000));
+      btn.textContent = `▶ Демо ${left}с`;
+    }, Math.max(100, 1000 / speed));
+
+    demoBaseline = false;
+    await _demoRender(0);
+    addTickerEvent('ok', '00:00 — цифровой двойник: сервисы, VM и хранилища; всё в норме');
+
+    await waitUntil(10000);
+    addTickerEvent('warning', '00:10 — Log Analyzer: P95 vm-db-node1 вырос до 3200 мс');
+    await _demoRead('/api/gigascope/logs/analytics');
+    await _demoRender(1);
+
+    await waitUntil(22000);
+    addTickerEvent('critical', '00:22 — Database деградирует: CPU 95%, пул соединений исчерпан');
+    await _demoRender(2);
+
+    await waitUntil(36000);
+    addTickerEvent('warning', '00:36 — каскад поднимается к Payment, Account, Transaction и CRM');
+    await _demoRender(3);
+    const cascadeData = await _demoRead('/api/gigascope/engine/status');
+    if (cascadeData.total_incidents !== expectedIncidents) throw new Error('состояние изменилось на этапе каскада');
+
+    await waitUntil(50000);
+    addTickerEvent('info', '00:50 — Hypothesis Engine: девять активных гипотез');
+    await _demoRender(4);
+
+    await waitUntil(64000);
+    addTickerEvent('warning', '01:04 — волна пользовательских жалоб подтверждает сбой платежей');
+    document.getElementById('signals-panel').style.display = 'flex';
+    await refreshSignals();
+    await _demoRender(5);
+
+    await waitUntil(76000);
+    addTickerEvent('info', '01:16 — LLM-диагноз: корневая причина — vm-db-node1');
+    await _demoRead('/api/gigascope/logs/hypotheses');
+
+    await waitUntil(80000);
+    addTickerEvent('critical', '01:20 — прогноз отказа Database за 4 часа: 35,5% → 36%');
+    document.getElementById('prediction-panel').style.display = 'flex';
+    document.getElementById('rec-panel').style.display = 'flex';
+    await refreshPredictions();
+    await _demoRender(6);
+    if (engineCascadeData) showCascadeOnGraph(engineCascadeData);
+
+    await waitUntil(DEMO_DURATION_MS);
+    const finalStatus = await _demoRead('/api/gigascope/engine/status');
+    if (Number(finalStatus.total_hypotheses) !== expectedHypotheses ||
+        Number(finalStatus.total_incidents) !== expectedIncidents) {
+      throw new Error('итоговые данные изменились во время показа');
+    }
+    addTickerEvent('ok', '01:30 — демо завершено: 9 гипотез, 18 инцидентов, 7 критических');
+  } catch (err) {
+    addTickerEvent('critical', '⛔ Демо остановлено: ' + (err.message || err));
+  } finally {
+    if (countdownTimer) clearInterval(countdownTimer);
+    // Восстановить фоновые опросчики новыми интервалами
+    if (_pollTimers.length === 0) {
+      _pollTimers.push(setInterval(pollStatus, 15000));
+      _pollTimers.push(setInterval(pollHypotheses, 15000));
+      _pollTimers.push(setInterval(pollIncidents, 15000));
+      _pollTimers.push(setInterval(pollModelLogs, 15000));
+      _pollTimers.push(setInterval(pollModelLogsStatus, 15000));
+      _pollTimers.push(setInterval(pollEngineStatus, 15000));
+      _pollTimers.push(setInterval(refreshPredictions, 30000));
+      _pollTimers.push(setInterval(pollSignals, 20000));
+    }
+    btn.textContent = '🚀 Демо';
+    btn.disabled = false;
+    demoRunning = false;
+  }
+}
+
+// Start polling — сохраняем ID для приостановки на время демо
+const _pollTimers = [
+  setInterval(pollStatus, 15000),
+  setInterval(pollHypotheses, 15000),
+  setInterval(pollIncidents, 15000),
+  setInterval(pollModelLogs, 15000),
+  setInterval(pollModelLogsStatus, 15000),
+  setInterval(pollEngineStatus, 15000),
+  setInterval(refreshPredictions, 30000),
+  setInterval(pollSignals, 20000)
+];
 
 // INIT
 (async function() {
@@ -727,9 +3053,11 @@ setInterval(pollStatus, 15000);
   if (ok && graphData.nodes.length > 0) {
     buildGraph();
     // Initial ticker event
-    addTickerEvent('ok', 'GigaScope запущен — 8 сервисов под наблюдением');
+    addTickerEvent('ok', 'GigaScope запущен — все сервисы в норме');
     // Fetch events and hypotheses
     setTimeout(() => { pollStatus(); }, 2000);
+    setTimeout(() => { pollEngineStatus(); }, 4000);
+    setTimeout(() => { refreshPredictions(); }, 6000);
   } else {
     container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:16px;color:#78909c;"><div style="font-size:48px;">📡</div><div style="font-size:16px;">Не удалось загрузить данные графа</div><div style="font-size:12px;">Проверьте, работает ли Ouroboros на порту 8765</div><button onclick="location.reload()" style="margin-top:8px;padding:8px 20px;border-radius:8px;border:1px solid rgba(0,180,255,0.3);background:rgba(0,180,255,0.1);color:#81d4fa;cursor:pointer;font-size:13px;font-family:inherit;">Повторить</button></div>`;
   }

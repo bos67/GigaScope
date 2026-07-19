@@ -1,5 +1,5 @@
 // GigaScope — Neo4j Schema Initialization
-// Запуск: cat 01_init_schema.cypher | docker exec -i gigascope-neo4j cypher-shell -u neo4j -p gigascope123
+// Запуск: cat 01_init_schema.cypher | docker exec -i gigascope-neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD"
 
 // === 1. Constraints ===
 CREATE CONSTRAINT service_name IF NOT EXISTS FOR (s:Service) REQUIRE s.name IS UNIQUE;
